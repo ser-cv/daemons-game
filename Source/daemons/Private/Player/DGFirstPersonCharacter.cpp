@@ -11,12 +11,15 @@ ADGFirstPersonCharacter::ADGFirstPersonCharacter()
 {
     PrimaryActorTick.bCanEverTick = false;
 
-    Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>("CharacterMesh");
-    Mesh1P->SetOnlyOwnerSee(true);
-
     FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>("FirstPersonCamera");
     FirstPersonCameraComponent->SetupAttachment(GetRootComponent());
     FirstPersonCameraComponent->bUsePawnControlRotation = true;
+
+    FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>("CharacterMesh");
+    FirstPersonMesh->SetOnlyOwnerSee(true);
+    FirstPersonMesh->SetupAttachment(FirstPersonCameraComponent);
+    FirstPersonMesh->bCastDynamicShadow = false;
+    FirstPersonMesh->CastShadow = false;
 }
 
 void ADGFirstPersonCharacter::BeginPlay()

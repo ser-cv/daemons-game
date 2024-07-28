@@ -23,7 +23,7 @@ public:
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-    TObjectPtr<USkeletalMeshComponent> Mesh1P;
+    TObjectPtr<USkeletalMeshComponent> FirstPersonMesh;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
