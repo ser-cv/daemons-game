@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Components/DGWeaponComponent.h"
 
 ADGFirstPersonCharacter::ADGFirstPersonCharacter()
 {
@@ -20,6 +21,8 @@ ADGFirstPersonCharacter::ADGFirstPersonCharacter()
     FirstPersonMesh->SetupAttachment(FirstPersonCameraComponent);
     FirstPersonMesh->bCastDynamicShadow = false;
     FirstPersonMesh->CastShadow = false;
+
+    WeaponComponent = CreateDefaultSubobject<UDGWeaponComponent>("WeaponComponent");
 }
 
 void ADGFirstPersonCharacter::BeginPlay()
@@ -53,6 +56,8 @@ void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
     {
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::Move);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::Look);
+
+        EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TryFire);
     }
 }
 
@@ -67,4 +72,19 @@ void ADGFirstPersonCharacter::PossessedBy(AController* NewController)
             Subsystem->AddMappingContext(DefaultMappingContext, 0);
         }
     }
+}
+
+void ADGFirstPersonCharacter::PostInitializeComponents()
+{
+    Super::PostInitializeComponents();
+
+    WeaponComponent->SetCompToAttachWeapons(FirstPersonMesh);
+    WeaponComponent->InitWeapons();
+}
+
+void ADGFirstPersonCharacter::TryFire(const FInputActionValue& Value)
+{
+    if (!WeaponComponent.Get()) return;
+
+    Value.Get<bool>() ? WeaponComponent->StartFire() : WeaponComponent->StopFire();
 }

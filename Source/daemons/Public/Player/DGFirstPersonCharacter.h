@@ -12,6 +12,7 @@ class UInputComponent;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
+class UDGWeaponComponent;
 
 UCLASS()
 class DAEMONS_API ADGFirstPersonCharacter : public ACharacter
@@ -22,7 +23,7 @@ public:
     ADGFirstPersonCharacter();
 
 protected:
-    UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Mesh)
     TObjectPtr<USkeletalMeshComponent> FirstPersonMesh;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -37,6 +38,12 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputAction> LookAction;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<UInputAction> FireAction;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    TObjectPtr<UDGWeaponComponent> WeaponComponent;
+
 protected:
     virtual void BeginPlay() override;
 
@@ -47,4 +54,8 @@ protected:
 public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
     virtual void PossessedBy(AController* NewController) override;
+    virtual void PostInitializeComponents() override;
+
+private:
+    void TryFire(const FInputActionValue& Value);
 };
