@@ -13,6 +13,7 @@ class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
 class UDGWeaponComponent;
+class UDGHealthComponent;
 
 UCLASS()
 class DAEMONS_API ADGFirstPersonCharacter : public ACharacter
@@ -46,6 +47,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UDGWeaponComponent> WeaponComponent;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    TObjectPtr<UDGHealthComponent> HealthComponent;
 
 protected:
     virtual void BeginPlay() override;

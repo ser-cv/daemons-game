@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Components/DGWeaponComponent.h"
+#include "Components/DGHealthComponent.h"
 
 ADGFirstPersonCharacter::ADGFirstPersonCharacter()
 {
@@ -23,6 +24,7 @@ ADGFirstPersonCharacter::ADGFirstPersonCharacter()
     FirstPersonMesh->CastShadow = false;
 
     WeaponComponent = CreateDefaultSubobject<UDGWeaponComponent>("WeaponComponent");
+    HealthComponent = CreateDefaultSubobject<UDGHealthComponent>("HealthComponent");
 }
 
 void ADGFirstPersonCharacter::BeginPlay()
