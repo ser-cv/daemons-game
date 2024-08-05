@@ -28,11 +28,15 @@ protected:
 
 public:
     virtual void Tick(float DeltaTime) override;
+    virtual void SetOwner(AActor* NewOwner) override;
 
     void StartFire();
     void StopFire();
 
 private:
+    UPROPERTY()
+    TObjectPtr<APawn> OwnerPawn;
+
     int32 AmmoUnits{10};
 
     void MakeShot();

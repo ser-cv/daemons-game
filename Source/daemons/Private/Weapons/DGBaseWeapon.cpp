@@ -26,6 +26,12 @@ void ADGBaseWeapon::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
+void ADGBaseWeapon::SetOwner(AActor* NewOwner)
+{
+    Super::SetOwner(NewOwner);
+    OwnerPawn = Cast<APawn>(NewOwner);
+}
+
 void ADGBaseWeapon::StartFire()
 {
     MakeShot();
@@ -65,7 +71,6 @@ bool ADGBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRota
 
 APlayerController* ADGBaseWeapon::GetPlayerController()
 {
-    const auto OwnerPawn = Cast<APawn>(GetOwner());
     if (!OwnerPawn) return nullptr;
     return Cast<APlayerController>(OwnerPawn->GetController());
 }

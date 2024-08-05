@@ -58,6 +58,8 @@ void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::Look);
 
         EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TryFire);
+        
+        EnhancedInputComponent->BindAction(SwitchWeaponsAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::SwitchWeapons);
     }
 }
 
@@ -87,4 +89,9 @@ void ADGFirstPersonCharacter::TryFire(const FInputActionValue& Value)
     if (!WeaponComponent.Get()) return;
 
     Value.Get<bool>() ? WeaponComponent->StartFire() : WeaponComponent->StopFire();
+}
+
+void ADGFirstPersonCharacter::SwitchWeapons(const FInputActionValue& Value) 
+{
+    WeaponComponent->SwitchWeapons();
 }

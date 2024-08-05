@@ -20,21 +20,40 @@ void UDGWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UDGWeaponComponent::InitWeapons()
 {
-    if (!WeaponSpawnClass || !CompToAttachWeapons.Get()) return;
-    WeaponInHands = GetWorld()->SpawnActor<ADGBaseWeapon>(WeaponSpawnClass);
+    if (!CompToAttachWeapons.Get()) return;
+    SpawnWeaponByType(MainWeaponClass, EItemType::MAIN_WEAPON);
+    AttachWeaponToSocket(EItemType::MAIN_WEAPON, ArmedWeaponSocketName);
+    ArmedWeaponType = EItemType::MAIN_WEAPON;
+    SpawnWeaponByType(ExtraWeaponClass, EItemType::EXTRA_WEAPON);
+    AttachWeaponToSocket(EItemType::EXTRA_WEAPON, HolsteredWeaponSocketName);
+}
 
-    if (!WeaponInHands.Get()) return;
-
-    FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
-    WeaponInHands->AttachToComponent(CompToAttachWeapons, AttachmentRules, WeaponAttachSocketName);
-
-    WeaponInHands->SetOwner(GetOwner());
+void UDGWeaponComponent::SwitchWeapons()
+{
+    AttachWeaponToSocket(ArmedWeaponType, HolsteredWeaponSocketName);
+    ArmedWeaponType = ArmedWeaponType == EItemType::MAIN_WEAPON ? EItemType::EXTRA_WEAPON : EItemType::MAIN_WEAPON;
+    AttachWeaponToSocket(ArmedWeaponType, ArmedWeaponSocketName);
 }
 
 void UDGWeaponComponent::StartFire()
 {
-    if (!WeaponInHands.Get()) return;
-    WeaponInHands->StartFire();
+    if (!WearableWeapons[ArmedWeaponType]) return;
+    WearableWeapons[ArmedWeaponType]->StartFire();
 }
 
 void UDGWeaponComponent::StopFire() {}
+
+void UDGWeaponComponent::SpawnWeaponByType(UClass* WeaponClass, EItemType WeaponType) 
+{
+    if (!WeaponClass) return;
+    WearableWeapons.Add(WeaponType, GetWorld()->SpawnActor<ADGBaseWeapon>(WeaponClass));
+    if (!WearableWeapons.FindRef(WeaponType)) return;
+    WearableWeapons[WeaponType]->SetOwner(GetOwner());
+}
+
+void UDGWeaponComponent::AttachWeaponToSocket(EItemType WeaponType, FName AttachingSocketName) 
+{
+    if (!WearableWeapons.FindRef(WeaponType)) return;
+    FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
+    WearableWeapons[WeaponType]->AttachToComponent(CompToAttachWeapons, AttachmentRules, AttachingSocketName);
+}

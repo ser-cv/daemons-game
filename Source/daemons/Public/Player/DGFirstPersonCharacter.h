@@ -41,6 +41,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputAction> FireAction;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<UInputAction> SwitchWeaponsAction;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UDGWeaponComponent> WeaponComponent;
 
@@ -58,4 +61,5 @@ public:
 
 private:
     void TryFire(const FInputActionValue& Value);
+    void SwitchWeapons(const FInputActionValue& Value);
 };

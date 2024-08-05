@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "DGCoreTypes.h"
 #include "DGWeaponComponent.generated.h"
 
 class ADGBaseWeapon;
@@ -17,11 +18,17 @@ public:
     UDGWeaponComponent();
 
 protected:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-    TSubclassOf<ADGBaseWeapon> WeaponSpawnClass;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ForTesting")
+    TSubclassOf<ADGBaseWeapon> MainWeaponClass;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ForTesting")
+    TSubclassOf<ADGBaseWeapon> ExtraWeaponClass;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-    FName WeaponAttachSocketName{"WeaponAttachSocket"};
+    FName ArmedWeaponSocketName{"ArmedWeaponSocket"};
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    FName HolsteredWeaponSocketName{"HolsteredWeaponSocket"};
 
     virtual void BeginPlay() override;
 
@@ -30,6 +37,7 @@ public:
 
     void SetCompToAttachWeapons(USceneComponent* NewComp) { CompToAttachWeapons = NewComp; };
     void InitWeapons();
+    void SwitchWeapons();
 
     void StartFire();
     void StopFire();
@@ -39,5 +47,10 @@ private:
     TObjectPtr<USceneComponent> CompToAttachWeapons;
 
     UPROPERTY()
-    TObjectPtr<ADGBaseWeapon> WeaponInHands;
+    TMap<EItemType, ADGBaseWeapon*> WearableWeapons;
+
+    EItemType ArmedWeaponType{EItemType::MAIN_WEAPON};
+
+    void SpawnWeaponByType(UClass* WeaponClass, EItemType WeaponType);
+    void AttachWeaponToSocket(EItemType WeaponType, FName AttachingSocketName);
 };
