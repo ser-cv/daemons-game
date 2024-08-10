@@ -21,7 +21,13 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UStaticMeshComponent> WeaponMesh;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (ClampMin = "1", ClampMax = "4000"))
+    float LineTraceDistance{1500.f};
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (ClampMin = "0", ClampMax = "100"))
+    float DamageAmount{10.f};
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
     FName MuzzleSocketName{"MuzzleSocket"};
 
     virtual void BeginPlay() override;
@@ -42,4 +48,6 @@ private:
     void MakeShot();
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation);
     APlayerController* GetPlayerController();
+    void MakeHit(FHitResult& Hit, const FVector& TraceStart, const FVector& TraceEnd);
+    void MakeDamage(const FHitResult& Hit);
 };

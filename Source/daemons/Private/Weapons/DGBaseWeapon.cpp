@@ -1,6 +1,7 @@
 // For Daemons and something else videogame purpose only
 
 #include "Weapons/DGBaseWeapon.h"
+#include "Engine/DamageEvents.h"
 #include "DrawDebugHelpers.h"
 
 ADGBaseWeapon::ADGBaseWeapon()
@@ -52,11 +53,17 @@ void ADGBaseWeapon::MakeShot()
     const auto BulletSpread = 5.f;
     const auto HalfRad = FMath::DegreesToRadians(BulletSpread);
     const FVector ShootDirection = FMath::VRandCone(ViewRotation.Vector(), HalfRad);
+    const FVector LineEnd = MuzzleLocation + ShootDirection * LineTraceDistance;
 
-    const float Distance = 1500.f;
-    const FVector LineEnd = MuzzleLocation + ShootDirection * Distance;
+    FHitResult Hit;
+    MakeHit(Hit, MuzzleLocation, LineEnd);
 
     //--AmmoUnits;
+
+    if (Hit.bBlockingHit)
+    {
+        MakeDamage(Hit);
+    }
 
     DrawDebugLine(GetWorld(), MuzzleLocation, LineEnd, FColor::Green, false, 2.f, 0u, 2.f);
 }
@@ -73,4 +80,21 @@ APlayerController* ADGBaseWeapon::GetPlayerController()
 {
     if (!OwnerPawn) return nullptr;
     return Cast<APlayerController>(OwnerPawn->GetController());
+}
+
+void ADGBaseWeapon::MakeHit(FHitResult& Hit, const FVector& TraceStart, const FVector& TraceEnd)
+{
+    if (!GetWorld()) return;
+    FCollisionQueryParams QueryParams;
+    TArray<AActor*> IgnoredActors = {GetOwner(), this};
+    QueryParams.AddIgnoredActors(IgnoredActors);
+
+    GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, QueryParams);
+}
+
+void ADGBaseWeapon::MakeDamage(const FHitResult& Hit)
+{
+    const auto DamagedActor = Hit.GetActor();
+    if (!DamagedActor) return;
+    DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
 }

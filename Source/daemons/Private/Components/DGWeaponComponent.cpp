@@ -43,15 +43,15 @@ void UDGWeaponComponent::StartFire()
 
 void UDGWeaponComponent::StopFire() {}
 
-void UDGWeaponComponent::SpawnWeaponByType(UClass* WeaponClass, EItemType WeaponType) 
+void UDGWeaponComponent::SpawnWeaponByType(UClass* WeaponClass, EItemType WeaponType)
 {
-    if (!WeaponClass) return;
+    if (!WeaponClass || !GetWorld()) return;
     WearableWeapons.Add(WeaponType, GetWorld()->SpawnActor<ADGBaseWeapon>(WeaponClass));
     if (!WearableWeapons.FindRef(WeaponType)) return;
     WearableWeapons[WeaponType]->SetOwner(GetOwner());
 }
 
-void UDGWeaponComponent::AttachWeaponToSocket(EItemType WeaponType, FName AttachingSocketName) 
+void UDGWeaponComponent::AttachWeaponToSocket(EItemType WeaponType, FName AttachingSocketName)
 {
     if (!WearableWeapons.FindRef(WeaponType)) return;
     FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
