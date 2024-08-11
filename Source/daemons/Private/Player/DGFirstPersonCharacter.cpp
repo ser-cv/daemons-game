@@ -57,6 +57,19 @@ void ADGFirstPersonCharacter::TrySprint(const FInputActionValue& Value)
     CustomCharacterMovement->bWantsToSprint = bWantsToSprint;
 }
 
+void ADGFirstPersonCharacter::TryCrouch(const FInputActionValue& Value) 
+{
+    if (!GetCharacterMovement()) return;
+    const bool bCrouch = Value.Get<bool>();
+
+    bCrouch ? Crouch() : UnCrouch();
+}
+
+void ADGFirstPersonCharacter::TryCrawl() 
+{
+    CustomCharacterMovement->bWantsToCrawling = !CustomCharacterMovement->bWantsToCrawling;
+}
+
 void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -71,6 +84,10 @@ void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
         EnhancedInputComponent->BindAction(SwitchWeaponsAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::SwitchWeapons);
         
         EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TrySprint);
+
+        EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TryCrouch);
+        
+        EnhancedInputComponent->BindAction(CrawlAction, ETriggerEvent::Completed, this, &ADGFirstPersonCharacter::TryCrawl);
     }
 }
 
