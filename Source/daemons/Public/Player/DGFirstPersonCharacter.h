@@ -14,6 +14,7 @@ class UInputMappingContext;
 struct FInputActionValue;
 class UDGWeaponComponent;
 class UDGHealthComponent;
+class UDGCharacterMovement;
 
 UCLASS()
 class DAEMONS_API ADGFirstPersonCharacter : public ACharacter
@@ -21,7 +22,7 @@ class DAEMONS_API ADGFirstPersonCharacter : public ACharacter
     GENERATED_BODY()
 
 public:
-    ADGFirstPersonCharacter();
+    ADGFirstPersonCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Mesh)
@@ -45,6 +46,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputAction> SwitchWeaponsAction;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<UInputAction> SprintAction;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UDGWeaponComponent> WeaponComponent;
 
@@ -55,8 +59,8 @@ protected:
     virtual void BeginPlay() override;
 
     void Move(const FInputActionValue& Value);
-
     void Look(const FInputActionValue& Value);
+    void TrySprint(const FInputActionValue& Value);
 
 public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -64,6 +68,9 @@ public:
     virtual void PostInitializeComponents() override;
 
 private:
+    UPROPERTY()
+    TObjectPtr<UDGCharacterMovement> CustomCharacterMovement;
+
     void TryFire(const FInputActionValue& Value);
     void SwitchWeapons(const FInputActionValue& Value);
 };

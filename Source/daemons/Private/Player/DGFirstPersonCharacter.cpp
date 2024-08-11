@@ -1,6 +1,7 @@
 // For Daemons and something else videogame purpose only
 
 #include "Player/DGFirstPersonCharacter.h"
+#include "Player/DGCharacterMovement.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
@@ -9,7 +10,7 @@
 #include "Components/DGWeaponComponent.h"
 #include "Components/DGHealthComponent.h"
 
-ADGFirstPersonCharacter::ADGFirstPersonCharacter()
+ADGFirstPersonCharacter::ADGFirstPersonCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UDGCharacterMovement>(ACharacter::CharacterMovementComponentName))
 {
     PrimaryActorTick.bCanEverTick = false;
 
@@ -50,6 +51,12 @@ void ADGFirstPersonCharacter::Look(const FInputActionValue& Value)
     AddControllerPitchInput(LookAxisVector.Y);
 }
 
+void ADGFirstPersonCharacter::TrySprint(const FInputActionValue& Value) 
+{
+    const bool bWantsToSprint = Value.Get<bool>();
+    CustomCharacterMovement->bWantsToSprint = bWantsToSprint;
+}
+
 void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -62,6 +69,8 @@ void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
         EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TryFire);
         
         EnhancedInputComponent->BindAction(SwitchWeaponsAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::SwitchWeapons);
+        
+        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TrySprint);
     }
 }
 
@@ -82,8 +91,15 @@ void ADGFirstPersonCharacter::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
 
+    check(HealthComponent);
+    check(WeaponComponent);
+
     WeaponComponent->SetCompToAttachWeapons(FirstPersonMesh);
     WeaponComponent->InitWeapons();
+
+    CustomCharacterMovement = GetCharacterMovement<UDGCharacterMovement>();
+
+    check(CustomCharacterMovement);
 }
 
 void ADGFirstPersonCharacter::TryFire(const FInputActionValue& Value)
