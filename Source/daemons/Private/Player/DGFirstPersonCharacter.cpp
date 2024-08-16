@@ -78,10 +78,13 @@ void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
     {
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::Move);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::Look);
+        
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
         EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TryFire);
-        
-        EnhancedInputComponent->BindAction(SwitchWeaponsAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::SwitchWeapons);
+
+        EnhancedInputComponent->BindAction(SwitchWeaponsAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::SwitchWeapons);
         
         EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TrySprint);
 
@@ -124,9 +127,4 @@ void ADGFirstPersonCharacter::TryFire(const FInputActionValue& Value)
     if (!WeaponComponent.Get()) return;
 
     Value.Get<bool>() ? WeaponComponent->StartFire() : WeaponComponent->StopFire();
-}
-
-void ADGFirstPersonCharacter::SwitchWeapons(const FInputActionValue& Value) 
-{
-    WeaponComponent->SwitchWeapons();
 }
