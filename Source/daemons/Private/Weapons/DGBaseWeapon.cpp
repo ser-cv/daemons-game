@@ -20,6 +20,10 @@ void ADGBaseWeapon::BeginPlay()
     Super::BeginPlay();
 
     check(WeaponMesh);
+
+    Ammo = MaxAmmo;
+    AmmoInClip = ClipCapacity;
+    bIsCharged = true;
 }
 
 void ADGBaseWeapon::Tick(float DeltaTime)
@@ -35,15 +39,44 @@ void ADGBaseWeapon::SetOwner(AActor* NewOwner)
 
 void ADGBaseWeapon::StartFire()
 {
+    if (IsEmptyClip() || !bIsCharged || bIsReloading) return;
+
     MakeShot();
+    bIsTriggerPressed = true;
+
+    if (GetWorldTimerManager().IsTimerActive(ChargingTimerHandle)) return;
+    GetWorldTimerManager().SetTimer(
+        ChargingTimerHandle,
+        [&]()
+        {
+            bIsCharged = true;
+            (bIsTriggerPressed && bIsAutomatic && !IsEmptyClip()) ? MakeShot() : GetWorldTimerManager().ClearTimer(ChargingTimerHandle);
+        },
+        60.f / ShotsPerMinute, true);
 }
 
-void ADGBaseWeapon::StopFire() {}
+void ADGBaseWeapon::StopFire()
+{
+    bIsTriggerPressed = false;
+}
+
+void ADGBaseWeapon::StartReloading()
+{
+    if (bIsReloading || !Ammo || bIsTriggerPressed) return;
+    bIsReloading = true;
+
+    GetWorldTimerManager().SetTimer(
+        RealoadingTimerHandle,
+        [&]()
+        {
+            bIsReloading = false;
+            ReloadWeapon();
+        },
+        ReloadingTime, false);
+}
 
 void ADGBaseWeapon::MakeShot()
 {
-    if (AmmoUnits <= 0) return;
-
     const FVector MuzzleLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName);
 
     FVector ViewLocation{FVector::ZeroVector};
@@ -58,12 +91,12 @@ void ADGBaseWeapon::MakeShot()
     FHitResult Hit;
     MakeHit(Hit, MuzzleLocation, LineEnd);
 
-    //--AmmoUnits;
-
     if (Hit.bBlockingHit)
     {
         MakeDamage(Hit);
     }
+
+    DecreaseAmmo();
 
     DrawDebugLine(GetWorld(), MuzzleLocation, LineEnd, FColor::Green, false, 2.f, 0u, 2.f);
 }
@@ -97,4 +130,19 @@ void ADGBaseWeapon::MakeDamage(const FHitResult& Hit)
     const auto DamagedActor = Hit.GetActor();
     if (!DamagedActor) return;
     DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
+}
+
+void ADGBaseWeapon::DecreaseAmmo()
+{
+    AmmoInClip = FMath::Clamp(--AmmoInClip, 0, ClipCapacity);
+    bIsCharged = false;
+}
+
+void ADGBaseWeapon::ReloadWeapon()
+{
+    AmmoInClip = (Ammo / ClipCapacity) ? ClipCapacity : Ammo;
+    Ammo = AmmoInClip;
+    bIsCharged = true;
+
+    UE_LOG(LogTemp, Display, TEXT("Ammo in clip: %i, the remaining ammo: %i"), AmmoInClip, Ammo)
 }

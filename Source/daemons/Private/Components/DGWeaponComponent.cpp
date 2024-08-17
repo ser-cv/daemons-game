@@ -41,7 +41,17 @@ void UDGWeaponComponent::StartFire()
     WearableWeapons[ArmedWeaponType]->StartFire();
 }
 
-void UDGWeaponComponent::StopFire() {}
+void UDGWeaponComponent::StopFire()
+{
+    if (!WearableWeapons[ArmedWeaponType]) return;
+    WearableWeapons[ArmedWeaponType]->StopFire();
+}
+
+void UDGWeaponComponent::ReloadWeapon()
+{
+    if (!WearableWeapons[ArmedWeaponType]) return;
+    WearableWeapons[ArmedWeaponType]->StartReloading();
+}
 
 void UDGWeaponComponent::SpawnWeaponByType(UClass* WeaponClass, EItemType WeaponType)
 {

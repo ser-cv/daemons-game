@@ -27,6 +27,21 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (ClampMin = "0", ClampMax = "100"))
     float DamageAmount{10.f};
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
+    bool bIsAutomatic{false};
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (EditCondition = "bIsAutomatic", ClampMin = "1", ClampMax = "1000"))
+    int32 ShotsPerMinute{400};
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config", meta = (ClampMin = "0", ClampMax = "1000"))
+    int32 MaxAmmo{200};
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config", meta = (ClampMin = "0", ClampMax = "100"))
+    int32 ClipCapacity{20};
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config", meta = (ClampMin = "0", ClampMax = "100"))
+    float ReloadingTime{3.f};
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
     FName MuzzleSocketName{"MuzzleSocket"};
 
@@ -39,15 +54,30 @@ public:
     void StartFire();
     void StopFire();
 
+    void StartReloading();
+
 private:
     UPROPERTY()
     TObjectPtr<APawn> OwnerPawn;
 
     int32 AmmoUnits{10};
+    int32 Ammo{};
+    int32 AmmoInClip{};
+
+    bool bIsCharged{false};
+    bool bIsTriggerPressed{false};
+
+    FTimerHandle ChargingTimerHandle;
+    FTimerHandle RealoadingTimerHandle;
+
+    bool bIsReloading{false};
 
     void MakeShot();
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation);
     APlayerController* GetPlayerController();
     void MakeHit(FHitResult& Hit, const FVector& TraceStart, const FVector& TraceEnd);
     void MakeDamage(const FHitResult& Hit);
+    bool IsEmptyClip() const { return !AmmoInClip; };
+    void DecreaseAmmo();
+    void ReloadWeapon();
 };

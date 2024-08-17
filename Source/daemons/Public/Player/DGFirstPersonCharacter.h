@@ -50,6 +50,9 @@ protected:
     TObjectPtr<UInputAction> SwitchWeaponsAction;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<UInputAction> ReloadAction;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputAction> SprintAction;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -81,6 +84,4 @@ public:
 private:
     UPROPERTY()
     TObjectPtr<UDGCharacterMovement> CustomCharacterMovement;
-
-    void TryFire(const FInputActionValue& Value);
 };

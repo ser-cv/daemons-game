@@ -10,7 +10,8 @@
 #include "Components/DGWeaponComponent.h"
 #include "Components/DGHealthComponent.h"
 
-ADGFirstPersonCharacter::ADGFirstPersonCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UDGCharacterMovement>(ACharacter::CharacterMovementComponentName))
+ADGFirstPersonCharacter::ADGFirstPersonCharacter(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<UDGCharacterMovement>(ACharacter::CharacterMovementComponentName))
 {
     PrimaryActorTick.bCanEverTick = false;
 
@@ -51,13 +52,13 @@ void ADGFirstPersonCharacter::Look(const FInputActionValue& Value)
     AddControllerPitchInput(LookAxisVector.Y);
 }
 
-void ADGFirstPersonCharacter::TrySprint(const FInputActionValue& Value) 
+void ADGFirstPersonCharacter::TrySprint(const FInputActionValue& Value)
 {
     const bool bWantsToSprint = Value.Get<bool>();
     CustomCharacterMovement->bWantsToSprint = bWantsToSprint;
 }
 
-void ADGFirstPersonCharacter::TryCrouch(const FInputActionValue& Value) 
+void ADGFirstPersonCharacter::TryCrouch(const FInputActionValue& Value)
 {
     if (!GetCharacterMovement()) return;
     const bool bCrouch = Value.Get<bool>();
@@ -65,7 +66,7 @@ void ADGFirstPersonCharacter::TryCrouch(const FInputActionValue& Value)
     bCrouch ? Crouch() : UnCrouch();
 }
 
-void ADGFirstPersonCharacter::TryCrawl() 
+void ADGFirstPersonCharacter::TryCrawl()
 {
     CustomCharacterMovement->bWantsToCrawling = !CustomCharacterMovement->bWantsToCrawling;
 }
@@ -78,18 +79,21 @@ void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
     {
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::Move);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::Look);
-        
+
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
-        EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TryFire);
+        EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::StartFire);
+        EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::StopFire);
 
         EnhancedInputComponent->BindAction(SwitchWeaponsAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::SwitchWeapons);
-        
+
+        EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::ReloadWeapon);
+
         EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TrySprint);
 
         EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TryCrouch);
-        
+
         EnhancedInputComponent->BindAction(CrawlAction, ETriggerEvent::Completed, this, &ADGFirstPersonCharacter::TryCrawl);
     }
 }
@@ -120,11 +124,4 @@ void ADGFirstPersonCharacter::PostInitializeComponents()
     CustomCharacterMovement = GetCharacterMovement<UDGCharacterMovement>();
 
     check(CustomCharacterMovement);
-}
-
-void ADGFirstPersonCharacter::TryFire(const FInputActionValue& Value)
-{
-    if (!WeaponComponent.Get()) return;
-
-    Value.Get<bool>() ? WeaponComponent->StartFire() : WeaponComponent->StopFire();
 }

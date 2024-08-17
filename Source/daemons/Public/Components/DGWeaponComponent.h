@@ -42,6 +42,8 @@ public:
     void StartFire();
     void StopFire();
 
+    void ReloadWeapon();
+
 private:
     UPROPERTY()
     TObjectPtr<USceneComponent> CompToAttachWeapons;
