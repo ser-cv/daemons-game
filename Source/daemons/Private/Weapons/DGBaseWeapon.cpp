@@ -13,6 +13,8 @@ ADGBaseWeapon::ADGBaseWeapon()
 
     WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>("WeaponMesh");
     WeaponMesh->SetupAttachment(RootComponent);
+
+    WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Ignore);
 }
 
 void ADGBaseWeapon::BeginPlay()

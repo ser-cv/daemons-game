@@ -9,6 +9,7 @@
 #include "InputActionValue.h"
 #include "Components/DGWeaponComponent.h"
 #include "Components/DGHealthComponent.h"
+#include "Interfaces/DGInteractionInterface.h"
 
 ADGFirstPersonCharacter::ADGFirstPersonCharacter(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<UDGCharacterMovement>(ACharacter::CharacterMovementComponentName))
@@ -71,6 +72,54 @@ void ADGFirstPersonCharacter::TryCrawl()
     CustomCharacterMovement->bWantsToCrawling = !CustomCharacterMovement->bWantsToCrawling;
 }
 
+void ADGFirstPersonCharacter::MakeInteraction()
+{
+    FVector ViewLocation;
+    FRotator ViewRotation;
+    Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+
+    const FVector TraceStart = ViewLocation;
+    const FVector ViewDirection = ViewRotation.Vector();
+    const FVector TraceEnd = TraceStart + ViewDirection * InteractionDistance;
+    FCollisionQueryParams CollisionParams;
+    CollisionParams.AddIgnoredActor(GetOwner());
+    FHitResult HitResult;
+    GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
+    
+    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Emerald, false, 2.f, 0u, 2.f);
+
+    if (HitResult.GetActor())
+    {
+        UE_LOG(LogTemp, Display, TEXT("%s"), *HitResult.GetActor()->GetName());
+    }
+
+    if (const auto ActorToInteract = Cast<IDGInteractionInterface>(HitResult.GetActor()))
+    {
+        if (ActorToInteract->CanTakeInHands())
+        {
+            if (ActorToInteract->GetMesh() && HitResult.GetActor()->IsAttachedTo(this))
+            {
+                UE_LOG(LogTemp, Display, TEXT("detach"));
+                ActorToInteract->GetMesh()->SetSimulatePhysics(true);
+                return;
+            }
+            if (ActorToInteract->GetMesh())
+            {
+                ActorToInteract->GetMesh()->SetSimulatePhysics(false);
+            }
+
+            FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
+            HitResult.GetActor()->AttachToComponent(FirstPersonMesh, AttachmentRules, ItemSocketName); //+socket name
+            //inventory component -> AddToInventory(ActorToInteract->GetItemData()) 
+            //Chech emty Item data and attach to hand
+        }
+        else
+        {
+            ActorToInteract->Interact();
+        }
+    }
+}
+
 void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -95,6 +144,8 @@ void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
         EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TryCrouch);
 
         EnhancedInputComponent->BindAction(CrawlAction, ETriggerEvent::Completed, this, &ADGFirstPersonCharacter::TryCrawl);
+
+        EnhancedInputComponent->BindAction(MakeInteractionAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::MakeInteraction);
     }
 }
 
