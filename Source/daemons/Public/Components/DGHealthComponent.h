@@ -6,29 +6,33 @@
 #include "Components/ActorComponent.h"
 #include "DGHealthComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE(FOnBecpmeDeadSignature, UDGHealthComponent, OnBecomeDead);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class DAEMONS_API UDGHealthComponent : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-public:	
-	UDGHealthComponent();
+public:
+    UDGHealthComponent();
+
+    UPROPERTY(BlueprintAssignable, Category = "Components|Activation")
+    FOnBecpmeDeadSignature OnBecomeDead;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta = (ClampMin = "0.0", ClampMax = "1000.0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta = (ClampMin = "0.0", ClampMax = "1000.0"))
     float MaxHealth = 100.0f;
 
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+public:
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 private:
     float Health = 0.0f;
 
-	UFUNCTION()
+    UFUNCTION()
     void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-    
+
     void SetHealth(float NewHealth);
 };

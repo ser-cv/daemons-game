@@ -98,7 +98,7 @@ void ADGBaseWeapon::MakeShot()
         MakeDamage(Hit);
     }
 
-    DecreaseAmmo();
+    ChangeAmmo(-1);
 
     DrawDebugLine(GetWorld(), MuzzleLocation, LineEnd, FColor::Green, false, 2.f, 0u, 2.f);
 }
@@ -134,16 +134,17 @@ void ADGBaseWeapon::MakeDamage(const FHitResult& Hit)
     DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
 }
 
-void ADGBaseWeapon::DecreaseAmmo()
+void ADGBaseWeapon::ChangeAmmo(int32 Amount)
 {
-    AmmoInClip = FMath::Clamp(--AmmoInClip, 0, ClipCapacity);
+    AmmoInClip = FMath::Clamp(AmmoInClip + Amount, 0, ClipCapacity);
     bIsCharged = false;
 }
 
 void ADGBaseWeapon::ReloadWeapon()
 {
-    AmmoInClip = (Ammo / ClipCapacity) ? ClipCapacity : Ammo;
-    Ammo = AmmoInClip;
+    const int32 AmmoToLoad = (Ammo / ClipCapacity) ? ClipCapacity : Ammo;
+    ChangeAmmo(AmmoToLoad);
+    Ammo = bIsInfiniteAmmo ? MaxAmmo : Ammo - AmmoInClip;
     bIsCharged = true;
 
     UE_LOG(LogTemp, Display, TEXT("Ammo in clip: %i, the remaining ammo: %i"), AmmoInClip, Ammo)

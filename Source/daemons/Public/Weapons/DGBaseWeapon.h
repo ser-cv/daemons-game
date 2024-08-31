@@ -30,6 +30,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
     bool bIsAutomatic{false};
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
+    bool bIsInfiniteAmmo{false};
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (EditCondition = "bIsAutomatic", ClampMin = "1", ClampMax = "1000"))
     int32 ShotsPerMinute{400};
 
@@ -78,6 +81,6 @@ private:
     void MakeHit(FHitResult& Hit, const FVector& TraceStart, const FVector& TraceEnd);
     void MakeDamage(const FHitResult& Hit);
     bool IsEmptyClip() const { return !AmmoInClip; };
-    void DecreaseAmmo();
+    void ChangeAmmo(int32 Amount);
     void ReloadWeapon();
 };
