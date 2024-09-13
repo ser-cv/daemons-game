@@ -7,15 +7,12 @@
 void UDGCharacterMovement::UpdateCharacterStateBeforeMovement(float DeltaSeconds) 
 {
     const bool bIsSprinting{IsCustomMovementMode(CMOVE_Sprint)};
-    const bool bIsCrawling{IsCustomMovementMode(CMOVE_Crawling)};
 
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Orange, UEnum::GetValueAsString(TEnumAsByte<ECustomMovementMode>(CustomMovementMode)));
 
     if (bWantsToSprint                              //
         && !Velocity.IsNearlyZero()                 //
         && !bIsCrouching							//
-		&& !bIsCrawling								//
-		&& !bWantsToCrawling						//
 		&& !bWantsToCrouch)
     {
         SetMovementMode(MOVE_Custom, CMOVE_Sprint);
@@ -37,15 +34,6 @@ void UDGCharacterMovement::UpdateCharacterStateBeforeMovement(float DeltaSeconds
 	{
 		ExitCrouching(DeltaSeconds);
 	}
-
-	if (FFindFloorResult FloorHit; bWantsToCrawling && CanCrawling(FloorHit))
-	{
-		EnterCrawling(DeltaSeconds);
-	}
-	if (bIsCrawling && !bWantsToCrawling)
-	{
-		ExitCrawling(DeltaSeconds);
-	}
 }
 
 float UDGCharacterMovement::GetMaxSpeed() const
@@ -59,7 +47,6 @@ float UDGCharacterMovement::GetMaxSpeed() const
 	switch (CustomMovementMode)
 	{
 		case CMOVE_Sprint : return SprintSpeed;
-		case CMOVE_Crawling : return CrawlingSpeed;
 		default: return MaxSpeed;
 	}
 }
@@ -81,7 +68,6 @@ void UDGCharacterMovement::InitializeComponent()
 	/* halfheight depends of condition */
 	HalfHeightMap.Add(EStandCondition::STANDING, DefaultHalfHeight);
 	HalfHeightMap.Add(EStandCondition::SITTING, GetCrouchedHalfHeight());
-	HalfHeightMap.Add(EStandCondition::LYING, CrawlingHeight);
 }
 
 void UDGCharacterMovement::PhysCustom(float DeltaTime, int32 Iterations) 
@@ -92,9 +78,6 @@ void UDGCharacterMovement::PhysCustom(float DeltaTime, int32 Iterations)
 	{
         case CMOVE_Sprint:
 			PhysSprint(DeltaTime, Iterations);
-			break;
-		case CMOVE_Crawling:
-			PhysCrawling(DeltaTime, Iterations);
 			break;
 		default:
 			UE_LOG(LogTemp, Error, TEXT("Invalid Movement Mode"))
@@ -131,8 +114,6 @@ void UDGCharacterMovement::ExitCrouching(float DeltaSeconds)
 
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Orange, "Exit Crouching");
 
-	bWantsToCrawling ? SetStandCondition(EStandCondition::LYING) : SetStandCondition(EStandCondition::STANDING);
-
 	const float DecreaseTimeModifier = -1.f;
 	ChangeCapsuleHalfHeight(GetCrouchedHalfHeight(), DeltaSeconds, DecreaseTimeModifier);
 
@@ -143,58 +124,6 @@ void UDGCharacterMovement::ExitCrouching(float DeltaSeconds)
 		bIsCrouching = false;
 		SetMovementMode(DefaultLandMovementMode);
     }    
-}
-
-void UDGCharacterMovement::EnterCrawling(float DeltaSeconds) 
-{
-	if (!CharacterOwner || FMath::IsNearlyZero(SitdownProcessDuration)) return;
-
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Orange, "Enter Crawling");
-
-	SetMovementMode(MOVE_Custom, CMOVE_Crawling);
-
-	if (FMath::IsNearlyEqual(GetCrouchedHalfHeight(), CharacterOwner->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()))
-    {
-        UnCrouch(false);
-		TrackedProcessTime = 0.f;
-		bIsCrouching = false;
-    }
-	
-	const float IncreaseBuffTime = 1.f;
-	ChangeCapsuleHalfHeight(CrawlingHeight, DeltaSeconds, IncreaseBuffTime);
-	if (FMath::IsNearlyEqual(CrawlingHeight, CharacterOwner->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()))
-    {
-		TrackedProcessTime = SitdownProcessDuration;
-		SetStandCondition(EStandCondition::LYING);
-    }
-}
-
-void UDGCharacterMovement::ExitCrawling(float DeltaSeconds) 
-{
-	if (!CharacterOwner || HasTopObstacle(GetCrouchedHalfHeight()) || FMath::IsNearlyZero(SitdownProcessDuration)) return;
-
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Orange, "Exit Crawling");
-
-	SetStandCondition(EStandCondition::SITTING);
-
-	const float DecreaseBuffTime = -1.f;
-	ChangeCapsuleHalfHeight(CrawlingHeight, DeltaSeconds, DecreaseBuffTime);
-	if (FMath::IsNearlyEqual(GetHalfHeightByStandCondition(), CharacterOwner->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()))
-    {
-		EnterCrouching(DeltaSeconds);
-    }
-}
-
-bool UDGCharacterMovement::CanCrawling(FFindFloorResult& FloorResult) const
-{
-    if (!UpdatedComponent) return false;
-    FindFloor(UpdatedComponent->GetComponentLocation(), FloorResult, false);
-	return FloorResult.bWalkableFloor;
-}
-
-void UDGCharacterMovement::PhysCrawling(float DeltaTime, int32 Iterations) 
-{
-	PhysWalking(DeltaTime, Iterations);
 }
 
 bool UDGCharacterMovement::HasTopObstacle(float HeightToCheck)

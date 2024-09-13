@@ -67,11 +67,6 @@ void ADGFirstPersonCharacter::TryCrouch(const FInputActionValue& Value)
     bCrouch ? Crouch() : UnCrouch();
 }
 
-void ADGFirstPersonCharacter::TryCrawl()
-{
-    CustomCharacterMovement->bWantsToCrawling = !CustomCharacterMovement->bWantsToCrawling;
-}
-
 void ADGFirstPersonCharacter::MakeInteraction()
 {
     FVector ViewLocation;
@@ -142,8 +137,6 @@ void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
         EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TrySprint);
 
         EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TryCrouch);
-
-        EnhancedInputComponent->BindAction(CrawlAction, ETriggerEvent::Completed, this, &ADGFirstPersonCharacter::TryCrawl);
 
         EnhancedInputComponent->BindAction(MakeInteractionAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::MakeInteraction);
     }

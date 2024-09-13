@@ -59,9 +59,6 @@ protected:
     TObjectPtr<UInputAction> CrouchAction;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<UInputAction> CrawlAction;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputAction> MakeInteractionAction;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -83,7 +80,6 @@ protected:
     void Look(const FInputActionValue& Value);
     void TrySprint(const FInputActionValue& Value);
     void TryCrouch(const FInputActionValue& Value);
-    void TryCrawl();
     void MakeInteraction();
 
 public:
