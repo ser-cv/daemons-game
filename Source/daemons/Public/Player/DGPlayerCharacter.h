@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "DGFirstPersonCharacter.generated.h"
+#include "DGPlayerCharacter.generated.h"
 
 class USkeletalMeshComponent;
 class UCameraComponent;
@@ -16,19 +16,15 @@ class UDGWeaponComponent;
 class UDGHealthComponent;
 
 UCLASS()
-class DAEMONS_API ADGFirstPersonCharacter : public ACharacter
+class DAEMONS_API ADGPlayerCharacter : public ACharacter
 {
     GENERATED_BODY()
 
 public:
-    ADGFirstPersonCharacter(const FObjectInitializer& ObjectInitializer);
+    ADGPlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Mesh)
-    TObjectPtr<USkeletalMeshComponent> FirstPersonMesh;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
+    // Input
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputMappingContext> DefaultMappingContext;
@@ -58,7 +54,15 @@ protected:
     TObjectPtr<UInputAction> CrouchAction;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<UInputAction> MakeInteractionAction;
+    TObjectPtr<UInputAction> InteractAction;
+
+    // Components
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Mesh)
+    TObjectPtr<USkeletalMeshComponent> FirstPersonMesh;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UDGWeaponComponent> WeaponComponent;
@@ -66,20 +70,28 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UDGHealthComponent> HealthComponent;
 
+    UCharacterMovementComponent* CharacterMovementComp;
+
+    // Parameters
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (ClampMin = "0", ClampMax = "1000"))
     float InteractionDistance{300.f};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
     FName ItemSocketName{"ItemSocket"};
 
-protected:
+    float DefaultWalkSpeed;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
+    float SprintSpeed{600.f};
+
     virtual void BeginPlay() override;
 
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
-    void TrySprint(const FInputActionValue& Value);
-    void TryCrouch(const FInputActionValue& Value);
-    void MakeInteraction();
+    void Sprint(const FInputActionValue& Value);
+    void HandleCrouch(const FInputActionValue& Value);
+    void Interact();
 
 public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

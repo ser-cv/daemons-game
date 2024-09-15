@@ -1,6 +1,6 @@
 // For Daemons and something else videogame purpose only
 
-#include "Player/DGFirstPersonCharacter.h"
+#include "Player/DGPlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
@@ -9,8 +9,9 @@
 #include "Components/DGWeaponComponent.h"
 #include "Components/DGHealthComponent.h"
 #include "Interfaces/DGInteractionInterface.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
-ADGFirstPersonCharacter::ADGFirstPersonCharacter(const FObjectInitializer& ObjectInitializer) 
+ADGPlayerCharacter::ADGPlayerCharacter(const FObjectInitializer& ObjectInitializer)
 {
     PrimaryActorTick.bCanEverTick = false;
 
@@ -28,12 +29,15 @@ ADGFirstPersonCharacter::ADGFirstPersonCharacter(const FObjectInitializer& Objec
     HealthComponent = CreateDefaultSubobject<UDGHealthComponent>("HealthComponent");
 }
 
-void ADGFirstPersonCharacter::BeginPlay()
+void ADGPlayerCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    CharacterMovementComp = GetCharacterMovement();
+    DefaultWalkSpeed = CharacterMovementComp->MaxWalkSpeed;
 }
 
-void ADGFirstPersonCharacter::Move(const FInputActionValue& Value)
+void ADGPlayerCharacter::Move(const FInputActionValue& Value)
 {
     if (!Controller) return;
     const auto MovementVector = Value.Get<FVector2D>();
@@ -42,7 +46,7 @@ void ADGFirstPersonCharacter::Move(const FInputActionValue& Value)
     AddMovementInput(GetActorRightVector(), MovementVector.X);
 }
 
-void ADGFirstPersonCharacter::Look(const FInputActionValue& Value)
+void ADGPlayerCharacter::Look(const FInputActionValue& Value)
 {
     if (!Controller) return;
     const auto LookAxisVector = Value.Get<FVector2D>();
@@ -51,20 +55,29 @@ void ADGFirstPersonCharacter::Look(const FInputActionValue& Value)
     AddControllerPitchInput(LookAxisVector.Y);
 }
 
-void ADGFirstPersonCharacter::TrySprint(const FInputActionValue& Value)
+void ADGPlayerCharacter::Sprint(const FInputActionValue& Value)
 {
-    const bool bWantsToSprint = Value.Get<bool>();
+    if (bIsCrouched) return;
+
+    if (Value.Get<bool>())
+    {
+        CharacterMovementComp->MaxWalkSpeed = SprintSpeed;
+    }
+    else
+    {
+        CharacterMovementComp->MaxWalkSpeed = DefaultWalkSpeed;
+    }
 }
 
-void ADGFirstPersonCharacter::TryCrouch(const FInputActionValue& Value)
+void ADGPlayerCharacter::HandleCrouch(const FInputActionValue& Value)
 {
-    if (!GetCharacterMovement()) return;
+    if (CharacterMovementComp == nullptr) return;
     const bool bCrouch = Value.Get<bool>();
 
     bCrouch ? Crouch() : UnCrouch();
 }
 
-void ADGFirstPersonCharacter::MakeInteraction()
+void ADGPlayerCharacter::Interact()
 {
     FVector ViewLocation;
     FRotator ViewRotation;
@@ -77,7 +90,7 @@ void ADGFirstPersonCharacter::MakeInteraction()
     CollisionParams.AddIgnoredActor(GetOwner());
     FHitResult HitResult;
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
-    
+
     DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Emerald, false, 2.f, 0u, 2.f);
 
     if (HitResult.GetActor())
@@ -101,9 +114,9 @@ void ADGFirstPersonCharacter::MakeInteraction()
             }
 
             FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
-            HitResult.GetActor()->AttachToComponent(FirstPersonMesh, AttachmentRules, ItemSocketName); //+socket name
-            //inventory component -> AddToInventory(ActorToInteract->GetItemData()) 
-            //Chech emty Item data and attach to hand
+            HitResult.GetActor()->AttachToComponent(FirstPersonMesh, AttachmentRules, ItemSocketName);  //+socket name
+            // inventory component -> AddToInventory(ActorToInteract->GetItemData())
+            // Chech emty Item data and attach to hand
         }
         else
         {
@@ -112,14 +125,14 @@ void ADGFirstPersonCharacter::MakeInteraction()
     }
 }
 
-void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ADGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-    if (const auto EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+    if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
     {
-        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::Move);
-        EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::Look);
+        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADGPlayerCharacter::Move);
+        EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADGPlayerCharacter::Look);
 
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -131,19 +144,19 @@ void ADGFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 
         EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::ReloadWeapon);
 
-        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TrySprint);
+        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ADGPlayerCharacter::Sprint);
 
-        EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::TryCrouch);
+        EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ADGPlayerCharacter::HandleCrouch);
 
-        EnhancedInputComponent->BindAction(MakeInteractionAction, ETriggerEvent::Triggered, this, &ADGFirstPersonCharacter::MakeInteraction);
+        EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ADGPlayerCharacter::Interact);
     }
 }
 
-void ADGFirstPersonCharacter::PossessedBy(AController* NewController)
+void ADGPlayerCharacter::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
 
-    if (const auto PlayerController = Cast<APlayerController>(NewController))
+    if (const APlayerController* PlayerController = Cast<APlayerController>(NewController))
     {
         if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
         {
@@ -152,7 +165,7 @@ void ADGFirstPersonCharacter::PossessedBy(AController* NewController)
     }
 }
 
-void ADGFirstPersonCharacter::PostInitializeComponents()
+void ADGPlayerCharacter::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
 
