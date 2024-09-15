@@ -1,7 +1,6 @@
 // For Daemons and something else videogame purpose only
 
 #include "Player/DGFirstPersonCharacter.h"
-#include "Player/DGCharacterMovement.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
@@ -11,8 +10,7 @@
 #include "Components/DGHealthComponent.h"
 #include "Interfaces/DGInteractionInterface.h"
 
-ADGFirstPersonCharacter::ADGFirstPersonCharacter(const FObjectInitializer& ObjectInitializer)
-    : Super(ObjectInitializer.SetDefaultSubobjectClass<UDGCharacterMovement>(ACharacter::CharacterMovementComponentName))
+ADGFirstPersonCharacter::ADGFirstPersonCharacter(const FObjectInitializer& ObjectInitializer) 
 {
     PrimaryActorTick.bCanEverTick = false;
 
@@ -56,7 +54,6 @@ void ADGFirstPersonCharacter::Look(const FInputActionValue& Value)
 void ADGFirstPersonCharacter::TrySprint(const FInputActionValue& Value)
 {
     const bool bWantsToSprint = Value.Get<bool>();
-    CustomCharacterMovement->bWantsToSprint = bWantsToSprint;
 }
 
 void ADGFirstPersonCharacter::TryCrouch(const FInputActionValue& Value)
@@ -164,8 +161,4 @@ void ADGFirstPersonCharacter::PostInitializeComponents()
 
     WeaponComponent->SetCompToAttachWeapons(FirstPersonMesh);
     WeaponComponent->InitWeapons();
-
-    CustomCharacterMovement = GetCharacterMovement<UDGCharacterMovement>();
-
-    check(CustomCharacterMovement);
 }

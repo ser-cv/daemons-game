@@ -14,7 +14,6 @@ class UInputMappingContext;
 struct FInputActionValue;
 class UDGWeaponComponent;
 class UDGHealthComponent;
-class UDGCharacterMovement;
 
 UCLASS()
 class DAEMONS_API ADGFirstPersonCharacter : public ACharacter
@@ -88,9 +87,6 @@ public:
     virtual void PostInitializeComponents() override;
 
 private:
-    UPROPERTY()
-    TObjectPtr<UDGCharacterMovement> CustomCharacterMovement;
-
     UPROPERTY()
     TObjectPtr<AActor> AttachedActor;
 };
