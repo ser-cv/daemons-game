@@ -55,26 +55,35 @@ void ADGPlayerCharacter::Look(const FInputActionValue& Value)
     AddControllerPitchInput(LookAxisVector.Y);
 }
 
-void ADGPlayerCharacter::Sprint(const FInputActionValue& Value)
+void ADGPlayerCharacter::HandleAcceleration()
 {
-    if (bIsCrouched) return;
+    if (bIsCrouching) return;
 
-    if (Value.Get<bool>())
-    {
-        CharacterMovementComp->MaxWalkSpeed = SprintSpeed;
-    }
-    else
+    if (bIsSprinting)
     {
         CharacterMovementComp->MaxWalkSpeed = DefaultWalkSpeed;
+        bIsSprinting = false;
+    }
+    else if (CharacterMovementComp->IsMovingOnGround())
+    {
+        CharacterMovementComp->MaxWalkSpeed = SprintSpeed;
+        bIsSprinting = true;
     }
 }
 
-void ADGPlayerCharacter::HandleCrouch(const FInputActionValue& Value)
+void ADGPlayerCharacter::HandleCrouch()
 {
     if (CharacterMovementComp == nullptr) return;
-    const bool bCrouch = Value.Get<bool>();
-
-    bCrouch ? Crouch() : UnCrouch();
+    if (bIsCrouching)
+    {
+        UnCrouch();
+        bIsCrouching = false;
+    }
+    else if (CharacterMovementComp->IsMovingOnGround())
+    {
+        Crouch();
+        bIsCrouching = true;
+    }
 }
 
 void ADGPlayerCharacter::Interact()
@@ -144,9 +153,9 @@ void ADGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
         EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::ReloadWeapon);
 
-        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ADGPlayerCharacter::Sprint);
+        EnhancedInputComponent->BindAction(AccelerateAction, ETriggerEvent::Started, this, &ADGPlayerCharacter::HandleAcceleration);
 
-        EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ADGPlayerCharacter::HandleCrouch);
+        EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &ADGPlayerCharacter::HandleCrouch);
 
         EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ADGPlayerCharacter::Interact);
     }

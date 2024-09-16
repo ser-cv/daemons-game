@@ -48,7 +48,7 @@ protected:
     TObjectPtr<UInputAction> ReloadAction;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<UInputAction> SprintAction;
+    TObjectPtr<UInputAction> AccelerateAction;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputAction> CrouchAction;
@@ -83,14 +83,21 @@ protected:
     float DefaultWalkSpeed;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
-    float SprintSpeed{600.f};
+    float SprintSpeed{800.f};
+
+    // States
+    UPROPERTY()
+    bool bIsCrouching{false};
+    UPROPERTY()
+    bool bIsSprinting{false};
 
     virtual void BeginPlay() override;
 
+    // Input methods
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
-    void Sprint(const FInputActionValue& Value);
-    void HandleCrouch(const FInputActionValue& Value);
+    void HandleAcceleration();
+    void HandleCrouch();
     void Interact();
 
 public:
