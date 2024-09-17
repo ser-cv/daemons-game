@@ -51,8 +51,8 @@ void ADGPlayerCharacter::Look(const FInputActionValue& Value)
     if (!Controller) return;
     const auto LookAxisVector = Value.Get<FVector2D>();
 
-    AddControllerYawInput(LookAxisVector.X);
-    AddControllerPitchInput(LookAxisVector.Y);
+    AddControllerYawInput(LookAxisVector.X * Sensitivity);
+    AddControllerPitchInput(LookAxisVector.Y * Sensitivity);
 }
 
 void ADGPlayerCharacter::HandleAcceleration()

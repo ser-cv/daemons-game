@@ -111,6 +111,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
     float SprintSpeed{800.f};
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
+    float Sensitivity{0.5f};
+
     // States
     UPROPERTY()
     bool bIsCrouching{false};
