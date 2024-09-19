@@ -58,12 +58,11 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputAction> InteractAction;
 
-
     // Weapon switch actions
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputAction> SwitchWeaponAction;
 
-     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputAction> NextWeaponAction;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -114,6 +113,9 @@ protected:
     float SprintSpeed{800.f};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
+    float DashSpeed{3500.f};
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
     float Sensitivity{0.5f};
 
     // States
@@ -125,14 +127,20 @@ protected:
     bool bIsSprinting{false};
 
     // Input methods
+
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
-    void HandleAcceleration();
-    void Dash(FVector2D Direction);
-    void Sprint();
-    void StopSprinting();
     void HandleCrouch();
     void Interact();
+
+    // Sprint and dash
+    void HandleAcceleration();
+    void Sprint();
+    void StopSprinting();
+    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+    void Dash();
+
+    
 
 public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -142,7 +150,7 @@ public:
 private:
     UPROPERTY()
     TObjectPtr<AActor> AttachedActor;
-    
+
     // Calculations
     UPROPERTY()
     FVector2D MovementInput;

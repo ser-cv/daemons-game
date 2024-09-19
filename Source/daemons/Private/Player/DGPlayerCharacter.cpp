@@ -37,138 +37,6 @@ void ADGPlayerCharacter::BeginPlay()
     DefaultWalkSpeed = CharacterMovementComp->MaxWalkSpeed;
 }
 
-void ADGPlayerCharacter::Move(const FInputActionValue& Value)
-{
-    if (!Controller) return;
-    const auto MovementVector = Value.Get<FVector2D>();
-    MovementInput = Value.Get<FVector2D>();
-
-    AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-    AddMovementInput(GetActorRightVector(), MovementVector.X);
-
-    if (MovementInput.Y < 1)
-    {
-        StopSprinting();
-    }
-}
-
-void ADGPlayerCharacter::Look(const FInputActionValue& Value)
-{
-    if (!Controller) return;
-    const auto LookAxisVector = Value.Get<FVector2D>();
-
-    AddControllerYawInput(LookAxisVector.X * Sensitivity);
-    AddControllerPitchInput(LookAxisVector.Y * Sensitivity);
-}
-
-void ADGPlayerCharacter::HandleAcceleration()
-{
-    if (bIsCrouching) return;
-    if (MovementInput.IsNearlyZero()) return;
-    
-    if (bIsSprinting)
-    {
-        StopSprinting();
-    }
-    else
-    {
-        if (MovementInput.Y > 0)
-        {
-            Sprint();
-        }
-        else
-        {
-            Dash(MovementInput);
-        }
-    }
-}
-
-void ADGPlayerCharacter::Dash(FVector2D Direction) 
-{
-    
-}
-
-void ADGPlayerCharacter::Sprint()
-{
-    if (CharacterMovementComp->IsMovingOnGround())
-    {
-        CharacterMovementComp->MaxWalkSpeed = SprintSpeed;
-        bIsSprinting = true;
-    }
-}
-
-void ADGPlayerCharacter::StopSprinting()
-{
-    if (bIsSprinting)
-    {
-        CharacterMovementComp->MaxWalkSpeed = DefaultWalkSpeed;
-        bIsSprinting = false;
-    }
-}
-
-void ADGPlayerCharacter::HandleCrouch()
-{
-    if (CharacterMovementComp == nullptr) return;
-    if (bIsCrouching)
-    {
-        UnCrouch();
-        bIsCrouching = false;
-    }
-    else if (CharacterMovementComp->IsMovingOnGround())
-    {
-        Crouch();
-        bIsCrouching = true;
-    }
-}
-
-void ADGPlayerCharacter::Interact()
-{
-    FVector ViewLocation;
-    FRotator ViewRotation;
-    Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
-
-    const FVector TraceStart = ViewLocation;
-    const FVector ViewDirection = ViewRotation.Vector();
-    const FVector TraceEnd = TraceStart + ViewDirection * InteractionDistance;
-    FCollisionQueryParams CollisionParams;
-    CollisionParams.AddIgnoredActor(GetOwner());
-    FHitResult HitResult;
-    GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
-
-    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Emerald, false, 2.f, 0u, 2.f);
-
-    if (HitResult.GetActor())
-    {
-        UE_LOG(LogTemp, Display, TEXT("%s"), *HitResult.GetActor()->GetName());
-    }
-
-    if (const auto ActorToInteract = Cast<IDGInteractionInterface>(HitResult.GetActor()))
-    {
-        if (ActorToInteract->CanTakeInHands())
-        {
-            if (ActorToInteract->GetMesh() && HitResult.GetActor()->IsAttachedTo(this))
-            {
-                UE_LOG(LogTemp, Display, TEXT("detach"));
-                ActorToInteract->GetMesh()->SetSimulatePhysics(true);
-                return;
-            }
-            if (ActorToInteract->GetMesh())
-            {
-                ActorToInteract->GetMesh()->SetSimulatePhysics(false);
-            }
-
-            FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
-            HitResult.GetActor()->AttachToComponent(FirstPersonMesh, AttachmentRules, ItemSocketName);  //+socket name
-            // inventory component -> AddToInventory(ActorToInteract->GetItemData())
-            // Chech emty Item data and attach to hand
-        }
-        else
-        {
-            ActorToInteract->Interact();
-        }
-    }
-}
-
 void ADGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -218,4 +86,133 @@ void ADGPlayerCharacter::PostInitializeComponents()
 
     WeaponComponent->SetCompToAttachWeapons(FirstPersonMesh);
     WeaponComponent->InitWeapons();
+}
+
+void ADGPlayerCharacter::Move(const FInputActionValue& Value)
+{
+    if (!Controller) return;
+    const auto MovementVector = Value.Get<FVector2D>();
+    MovementInput = Value.Get<FVector2D>();
+
+    AddMovementInput(GetActorForwardVector(), MovementVector.Y);
+    AddMovementInput(GetActorRightVector(), MovementVector.X);
+
+    if (MovementInput.Y < 1)
+    {
+        StopSprinting();
+    }
+}
+
+void ADGPlayerCharacter::Look(const FInputActionValue& Value)
+{
+    if (!Controller) return;
+    const auto LookAxisVector = Value.Get<FVector2D>();
+
+    AddControllerYawInput(LookAxisVector.X * Sensitivity);
+    AddControllerPitchInput(LookAxisVector.Y * Sensitivity);
+}
+
+void ADGPlayerCharacter::HandleCrouch()
+{
+    if (CharacterMovementComp == nullptr) return;
+    if (bIsCrouching)
+    {
+        UnCrouch();
+        bIsCrouching = false;
+    }
+    else if (CharacterMovementComp->IsMovingOnGround())
+    {
+        Crouch();
+        bIsCrouching = true;
+        StopSprinting();
+    }
+}
+
+void ADGPlayerCharacter::HandleAcceleration()
+{
+    if (bIsCrouching) return;
+    if (MovementInput.IsNearlyZero()) return;
+
+    if (MovementInput.Y > 0)
+    {
+        if (MovementInput.X == 0)
+        {
+            Sprint();
+        }
+        else
+        {
+            Dash();
+            Sprint();
+        }
+    }
+    else
+    {
+        Dash();
+    }
+}
+
+void ADGPlayerCharacter::Sprint()
+{
+    if (CharacterMovementComp->IsMovingOnGround())
+    {
+        CharacterMovementComp->MaxWalkSpeed = SprintSpeed;
+        bIsSprinting = true;
+    }
+}
+
+void ADGPlayerCharacter::StopSprinting()
+{
+    if (bIsSprinting)
+    {
+        CharacterMovementComp->MaxWalkSpeed = DefaultWalkSpeed;
+        bIsSprinting = false;
+    }
+}
+
+void ADGPlayerCharacter::Interact()
+{
+    FVector ViewLocation;
+    FRotator ViewRotation;
+    Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+
+    const FVector TraceStart = ViewLocation;
+    const FVector ViewDirection = ViewRotation.Vector();
+    const FVector TraceEnd = TraceStart + ViewDirection * InteractionDistance;
+    FCollisionQueryParams CollisionParams;
+    CollisionParams.AddIgnoredActor(GetOwner());
+    FHitResult HitResult;
+    GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
+
+    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Emerald, false, 2.f, 0u, 2.f);
+
+    if (HitResult.GetActor())
+    {
+        UE_LOG(LogTemp, Display, TEXT("%s"), *HitResult.GetActor()->GetName());
+    }
+
+    if (const auto ActorToInteract = Cast<IDGInteractionInterface>(HitResult.GetActor()))
+    {
+        if (ActorToInteract->CanTakeInHands())
+        {
+            if (ActorToInteract->GetMesh() && HitResult.GetActor()->IsAttachedTo(this))
+            {
+                UE_LOG(LogTemp, Display, TEXT("detach"));
+                ActorToInteract->GetMesh()->SetSimulatePhysics(true);
+                return;
+            }
+            if (ActorToInteract->GetMesh())
+            {
+                ActorToInteract->GetMesh()->SetSimulatePhysics(false);
+            }
+
+            FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
+            HitResult.GetActor()->AttachToComponent(FirstPersonMesh, AttachmentRules, ItemSocketName);  //+socket name
+            // inventory component -> AddToInventory(ActorToInteract->GetItemData())
+            // Chech emty Item data and attach to hand
+        }
+        else
+        {
+            ActorToInteract->Interact();
+        }
+    }
 }
