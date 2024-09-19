@@ -41,9 +41,15 @@ void ADGPlayerCharacter::Move(const FInputActionValue& Value)
 {
     if (!Controller) return;
     const auto MovementVector = Value.Get<FVector2D>();
+    MovementInput = Value.Get<FVector2D>();
 
     AddMovementInput(GetActorForwardVector(), MovementVector.Y);
     AddMovementInput(GetActorRightVector(), MovementVector.X);
+
+    if (MovementInput.Y < 1)
+    {
+        StopSprinting();
+    }
 }
 
 void ADGPlayerCharacter::Look(const FInputActionValue& Value)
@@ -58,16 +64,45 @@ void ADGPlayerCharacter::Look(const FInputActionValue& Value)
 void ADGPlayerCharacter::HandleAcceleration()
 {
     if (bIsCrouching) return;
+    if (MovementInput.IsNearlyZero()) return;
+    
+    if (bIsSprinting)
+    {
+        StopSprinting();
+    }
+    else
+    {
+        if (MovementInput.Y > 0)
+        {
+            Sprint();
+        }
+        else
+        {
+            Dash(MovementInput);
+        }
+    }
+}
 
+void ADGPlayerCharacter::Dash(FVector2D Direction) 
+{
+    
+}
+
+void ADGPlayerCharacter::Sprint()
+{
+    if (CharacterMovementComp->IsMovingOnGround())
+    {
+        CharacterMovementComp->MaxWalkSpeed = SprintSpeed;
+        bIsSprinting = true;
+    }
+}
+
+void ADGPlayerCharacter::StopSprinting()
+{
     if (bIsSprinting)
     {
         CharacterMovementComp->MaxWalkSpeed = DefaultWalkSpeed;
         bIsSprinting = false;
-    }
-    else if (CharacterMovementComp->IsMovingOnGround())
-    {
-        CharacterMovementComp->MaxWalkSpeed = SprintSpeed;
-        bIsSprinting = true;
     }
 }
 

@@ -24,6 +24,8 @@ public:
     ADGPlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
+    virtual void BeginPlay() override;
+
     // Input
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -115,17 +117,20 @@ protected:
     float Sensitivity{0.5f};
 
     // States
-    UPROPERTY()
-    bool bIsCrouching{false};
-    UPROPERTY()
-    bool bIsSprinting{false};
 
-    virtual void BeginPlay() override;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "States")
+    bool bIsCrouching{false};
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "States")
+    bool bIsSprinting{false};
 
     // Input methods
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
     void HandleAcceleration();
+    void Dash(FVector2D Direction);
+    void Sprint();
+    void StopSprinting();
     void HandleCrouch();
     void Interact();
 
@@ -137,4 +142,8 @@ public:
 private:
     UPROPERTY()
     TObjectPtr<AActor> AttachedActor;
+    
+    // Calculations
+    UPROPERTY()
+    FVector2D MovementInput;
 };
