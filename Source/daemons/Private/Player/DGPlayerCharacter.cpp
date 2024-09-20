@@ -44,6 +44,8 @@ void ADGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
     if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
     {
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADGPlayerCharacter::Move);
+        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &ADGPlayerCharacter::Move);
+
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADGPlayerCharacter::Look);
 
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
