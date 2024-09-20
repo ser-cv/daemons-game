@@ -135,14 +135,11 @@ void ADGPlayerCharacter::HandleAcceleration()
 
     if (MovementInput.Y > 0)
     {
-        if (MovementInput.X == 0)
-        {
-            Sprint();
-        }
-        else
+        Sprint();
+
+        if (CharacterMovementComp->IsMovingOnGround() == false)
         {
             Dash();
-            Sprint();
         }
     }
     else
