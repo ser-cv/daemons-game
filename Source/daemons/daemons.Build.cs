@@ -17,6 +17,7 @@ public class daemons : ModuleRules
             "EnhancedInput",
             "NavigationSystem",
             "AIModule",
+            "GameplayTasks"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
