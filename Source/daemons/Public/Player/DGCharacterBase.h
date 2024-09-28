@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "DGPlayerCharacter.generated.h"
+#include "DGCharacterBase.generated.h"
 
 class USkeletalMeshComponent;
 class UCameraComponent;
@@ -16,17 +16,17 @@ class UDGWeaponComponent;
 class UDGHealthComponent;
 
 UCLASS()
-class DAEMONS_API ADGPlayerCharacter : public ACharacter
+class DAEMONS_API ADGCharacterBase : public ACharacter
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-    ADGPlayerCharacter(const FObjectInitializer& ObjectInitializer);
+    ADGCharacterBase(const FObjectInitializer& ObjectInitializer);
 
 protected:
     virtual void BeginPlay() override;
 
-    // Input
+     // Input
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputMappingContext> DefaultMappingContext;
@@ -140,12 +140,10 @@ protected:
     UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
     void Dash();
 
-    
-
 public:
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-    virtual void PossessedBy(AController* NewController) override;
     virtual void PostInitializeComponents() override;
+    void PossessedBy(AController* NewController);
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
     UPROPERTY()
