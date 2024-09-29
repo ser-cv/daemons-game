@@ -22,7 +22,12 @@ void ADGMechCharacter::HandleAcceleration()
     Dash();
 }
 
-void ADGMechCharacter::Interact()
-{
+void ADGMechCharacter::Sprint() {}
+
+void ADGMechCharacter::StopSprinting() {}
+
+void ADGMechCharacter::HandleCrouch() {}
+
+void ADGMechCharacter::Interact() {
    
 }
