@@ -15,4 +15,13 @@ class DAEMONS_API ADGHumanCharacter : public ADGCharacterBase
 public:
     void PossessedBy(AController* NewController);
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
+    virtual void HandleCrouch() override;
+    virtual void Interact() override;
+
+    // Sprint and dash
+    virtual void HandleAcceleration() override;
+    virtual void Sprint() override;
+    virtual void StopSprinting() override;
 };

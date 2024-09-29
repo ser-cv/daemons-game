@@ -128,17 +128,21 @@ protected:
 
     // Input methods
 
-    void Move(const FInputActionValue& Value);
-    void Look(const FInputActionValue& Value);
-    void HandleCrouch();
-    void Interact();
+    virtual void Move(const FInputActionValue& Value);
+    virtual void Look(const FInputActionValue& Value);
+    virtual void HandleCrouch() PURE_VIRTUAL(ADGCharacterBase::HandleCrouch,);
+    virtual void Interact() PURE_VIRTUAL(ADGCharacterBase::Interact, );
 
     // Sprint and dash
-    void HandleAcceleration();
-    void Sprint();
-    void StopSprinting();
+    virtual void HandleAcceleration() PURE_VIRTUAL(ADGCharacterBase::HandleAcceleration, );
+    virtual void Sprint() PURE_VIRTUAL(ADGCharacterBase::Sprint, );
+    virtual void StopSprinting() PURE_VIRTUAL(ADGCharacterBase::StopSprinting, );
     UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
     void Dash();
+
+    // Calculations
+    UPROPERTY()
+    FVector2D MovementInput;
 
 public:
     virtual void PostInitializeComponents() override;
@@ -148,8 +152,4 @@ public:
 private:
     UPROPERTY()
     TObjectPtr<AActor> AttachedActor;
-
-    // Calculations
-    UPROPERTY()
-    FVector2D MovementInput;
 };

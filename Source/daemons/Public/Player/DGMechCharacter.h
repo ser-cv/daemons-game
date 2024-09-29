@@ -14,4 +14,9 @@ class DAEMONS_API ADGMechCharacter : public ADGCharacterBase
 
     void PossessedBy(AController* NewController);
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
+    virtual void Interact() override;
+
+    virtual void HandleAcceleration() override;
 };
