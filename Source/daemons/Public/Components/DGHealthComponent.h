@@ -28,6 +28,8 @@ protected:
 public:
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+    bool IsAlive() const { return Health > 0; }
+
 private:
     float Health = 0.0f;
 

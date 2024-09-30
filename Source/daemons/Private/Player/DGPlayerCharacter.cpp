@@ -35,6 +35,8 @@ void ADGPlayerCharacter::BeginPlay()
 
     CharacterMovementComp = GetCharacterMovement();
     DefaultWalkSpeed = CharacterMovementComp->MaxWalkSpeed;
+
+    Tags.Add(PlayerTagName);
 }
 
 void ADGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

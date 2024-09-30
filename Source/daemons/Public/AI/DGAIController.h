@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "DGAIController.generated.h"
 
+class UDGAIPerceptionComponent;
 
 UCLASS()
 class DAEMONS_API ADGAIController : public AAIController
@@ -16,5 +17,8 @@ public:
 	ADGAIController();
 	
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    TObjectPtr<UDGAIPerceptionComponent> DGAIPerceptionComponent; 
+
 	virtual void OnPossess(APawn* InPawn) override;
 };

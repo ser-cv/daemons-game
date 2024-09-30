@@ -107,6 +107,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
     FName ItemSocketName{"ItemSocket"};
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+    FName PlayerTagName{"Player"};
+
     float DefaultWalkSpeed;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
