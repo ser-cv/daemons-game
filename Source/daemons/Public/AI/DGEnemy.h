@@ -9,6 +9,7 @@
 
 class UBehaviorTree;
 class UAnimMontage;
+class UDGHealthComponent;
 
 UCLASS()
 class DAEMONS_API ADGEnemy : public ACharacter, public IDGCombatInterface
@@ -27,6 +28,9 @@ public:
 	virtual bool CanAttack() const override;
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    TObjectPtr<UDGHealthComponent> HealthComponent;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
     TObjectPtr<UAnimMontage> ReactionAnimMontage;
 
@@ -36,11 +40,14 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
     TArray<UAnimMontage*> DeathAnimMontages;
 
-
 	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+	void OnBecomeDead();
 };

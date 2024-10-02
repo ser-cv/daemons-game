@@ -4,6 +4,9 @@
 #include "AI/DGEnemy.h"
 #include "AI/DGAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/DGHealthComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "BrainComponent.h"
 
 ADGEnemy::ADGEnemy()
 {
@@ -18,6 +21,8 @@ ADGEnemy::ADGEnemy()
     }
 
 	PrimaryActorTick.bCanEverTick = true;
+
+	HealthComponent = CreateDefaultSubobject<UDGHealthComponent>("HealthComponent");
 }
 
 void ADGEnemy::DoLightMeeleAttack() 
@@ -37,6 +42,16 @@ void ADGEnemy::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ADGEnemy::PostInitializeComponents() 
+{
+	Super::PostInitializeComponents();
+
+	if (HealthComponent && !HealthComponent->OnBecomeDead.IsBound())
+    {
+		HealthComponent->OnBecomeDead.AddUniqueDynamic(this, &ADGEnemy::OnBecomeDead);
+	}
+}
+
 void ADGEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -47,5 +62,23 @@ void ADGEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ADGEnemy::OnBecomeDead() 
+{
+	GetCharacterMovement()->DisableMovement();
+
+    SetLifeSpan(5.f);
+        
+    GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    GetMesh()->SetSimulatePhysics(true);
+
+	const auto AIController = Cast<AAIController>(Controller);
+    if (AIController && AIController->BrainComponent)
+    {
+        AIController->BrainComponent->Cleanup();
+    }
 }
 

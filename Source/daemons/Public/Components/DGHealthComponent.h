@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "DGCoreTypes.h"
 #include "DGHealthComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE(FOnBecpmeDeadSignature, UDGHealthComponent, OnBecomeDead);
+DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE(FOnBecomeDeadSignature, UDGHealthComponent, OnBecomeDead);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class DAEMONS_API UDGHealthComponent : public UActorComponent
@@ -17,7 +18,7 @@ public:
     UDGHealthComponent();
 
     UPROPERTY(BlueprintAssignable, Category = "Components|Activation")
-    FOnBecpmeDeadSignature OnBecomeDead;
+    FOnBecomeDeadSignature OnBecomeDead;
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta = (ClampMin = "0.0", ClampMax = "1000.0"))
