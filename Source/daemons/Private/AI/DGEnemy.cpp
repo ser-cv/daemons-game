@@ -52,6 +52,18 @@ void ADGEnemy::PostInitializeComponents()
 	}
 }
 
+float ADGEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+    const bool bHasChance = (FMath::SRand() * 100.f) < DamageReactionChance;
+    const bool bCanReaction = bHasChance && (!GetCurrentMontage() || (GetCurrentMontage() != ReactionAnimMontage.Get()));
+    if (bCanReaction) 
+    {
+        PlayAnimMontage(ReactionAnimMontage);
+    }
+
+    return Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+}
+
 void ADGEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

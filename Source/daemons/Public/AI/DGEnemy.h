@@ -40,8 +40,12 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
     TArray<UAnimMontage*> DeathAnimMontages;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (Clampmin = "0", clampmax = "100"))
+	float DamageReactionChance{50.f};
+
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
