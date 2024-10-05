@@ -1,6 +1,5 @@
 // For Daemons and something else videogame purpose only
 
-
 #include "Player/DGCharacterBase.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -14,7 +13,8 @@
 
 ADGCharacterBase::ADGCharacterBase(const FObjectInitializer& ObjectInitializer)
 {
-    PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = true;
+    SetActorTickEnabled(false);
 
     FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>("FirstPersonCamera");
     FirstPersonCameraComponent->SetupAttachment(GetRootComponent());
@@ -36,6 +36,62 @@ void ADGCharacterBase::BeginPlay()
 
     CharacterMovementComp = GetCharacterMovement();
     DefaultWalkSpeed = CharacterMovementComp->MaxWalkSpeed;
+}
+
+void ADGCharacterBase::Tick(float DeltaTime)
+{
+    if (bIsDashing)
+    {
+        CharacterMovementComp->AddForce(CalculatedDashForce);
+    }
+}
+
+void ADGCharacterBase::Dash()
+{
+    if (bDashCooldown == false)
+    {
+        bDashCooldown = true;
+        SetActorTickEnabled(true);  // Check if it's not underperforming
+        CalculatedDashForce = CalculateDashForce();
+        bIsDashing = true;
+
+        // Set timer to stop dashing
+        FTimerHandle TimerHandle;
+        GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADGCharacterBase::StopDashing, DashActiveTime, false);
+
+        // Set timer for dash cooldown
+        FTimerHandle TimerHandleCD;
+        GetWorld()->GetTimerManager().SetTimer(TimerHandleCD, this, &ADGCharacterBase::EndDashCooldown, DashCooldownTime, false);
+    }
+}
+
+void ADGCharacterBase::StopDashing()
+{
+    SetActorTickEnabled(false);
+    bIsDashing = false;
+}
+
+void ADGCharacterBase::EndDashCooldown()
+{
+    bDashCooldown = false;
+}
+
+FVector ADGCharacterBase::CalculateDashForce()
+{
+    FVector DashForce = GetVelocity();
+    DashForce.Normalize(0.0001);
+
+    if (CharacterMovementComp->IsMovingOnGround())
+    {
+        DashForce *= 100000 * DashSpeed;
+    }
+    else
+    {
+        DashForce *= 50000 * DashSpeed;
+    }
+    DashForce.Z = 0;
+
+    return DashForce;
 }
 
 void ADGCharacterBase::PostInitializeComponents()
@@ -114,5 +170,3 @@ void ADGCharacterBase::Look(const FInputActionValue& Value)
     AddControllerYawInput(LookAxisVector.X * Sensitivity);
     AddControllerPitchInput(LookAxisVector.Y * Sensitivity);
 }
-
-

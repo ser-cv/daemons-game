@@ -18,15 +18,16 @@ class UDGHealthComponent;
 UCLASS()
 class DAEMONS_API ADGCharacterBase : public ACharacter
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
     ADGCharacterBase(const FObjectInitializer& ObjectInitializer);
 
 protected:
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime);
 
-     // Input
+    // Input
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputMappingContext> DefaultMappingContext;
@@ -107,7 +108,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
     FName ItemSocketName{"ItemSocket"};
 
-    float DefaultWalkSpeed;
+    float DefaultWalkSpeed{};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
     float SprintSpeed{800.f};
@@ -118,6 +119,12 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Parameters")
     float Sensitivity{0.5f};
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Parameters");
+    float DashCooldownTime{0.5f};
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Parameters");
+    float DashActiveTime{0.2f};
+
     // States
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "States")
@@ -126,23 +133,32 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "States")
     bool bIsSprinting{false};
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "States")
+    bool bIsDashing{false};
+
+    bool bDashCooldown{false};
+
     // Input methods
 
     virtual void Move(const FInputActionValue& Value);
     virtual void Look(const FInputActionValue& Value);
-    virtual void HandleCrouch() PURE_VIRTUAL(ADGCharacterBase::HandleCrouch,);
+    virtual void HandleCrouch() PURE_VIRTUAL(ADGCharacterBase::HandleCrouch, );
     virtual void Interact() PURE_VIRTUAL(ADGCharacterBase::Interact, );
 
     // Sprint and dash
     virtual void HandleAcceleration() PURE_VIRTUAL(ADGCharacterBase::HandleAcceleration, );
     virtual void Sprint() PURE_VIRTUAL(ADGCharacterBase::Sprint, );
     virtual void StopSprinting() PURE_VIRTUAL(ADGCharacterBase::StopSprinting, );
-    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
     void Dash();
+    void StopDashing();
+    void EndDashCooldown();
 
     // Calculations
     UPROPERTY()
     FVector2D MovementInput;
+
+    FVector CalculateDashForce();
+    FVector CalculatedDashForce{0};
 
 public:
     virtual void PostInitializeComponents() override;
