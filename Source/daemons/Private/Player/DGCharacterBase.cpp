@@ -42,7 +42,7 @@ void ADGCharacterBase::Tick(float DeltaTime)
 {
     if (bIsDashing)
     {
-        CharacterMovementComp->AddForce(CalculatedDashForce);
+        CharacterMovementComp->AddForce(CalculateDashForce());
     }
 }
 
@@ -52,7 +52,6 @@ void ADGCharacterBase::Dash()
     {
         bDashCooldown = true;
         SetActorTickEnabled(true);  // Check if it's not underperforming
-        CalculatedDashForce = CalculateDashForce();
         bIsDashing = true;
 
         // Set timer to stop dashing

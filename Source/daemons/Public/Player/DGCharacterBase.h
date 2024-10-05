@@ -158,7 +158,6 @@ protected:
     FVector2D MovementInput;
 
     FVector CalculateDashForce();
-    FVector CalculatedDashForce{0};
 
 public:
     virtual void PostInitializeComponents() override;
