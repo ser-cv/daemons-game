@@ -22,5 +22,6 @@ public:
 
 	virtual void DoLightMeeleAttack() = 0;
 	virtual void DoHeavyMeeleAttack() = 0;
-	virtual bool CanAttack() const = 0;
+
+	virtual void DoRangeAttack(const FVector& AimLocation) = 0;
 };

@@ -32,7 +32,7 @@ void UDGMeeleAttackService::TryAttackAim(AAIController* AIController, const FVec
     if (Distance > AttackDistance) return;
 
     const auto CombatInterface = Cast<IDGCombatInterface>(AIPawn);
-    if (!CombatInterface || !CombatInterface->CanAttack()) return;
+    if (!CombatInterface) return;
     
     CombatInterface->DoLightMeeleAttack();
 }

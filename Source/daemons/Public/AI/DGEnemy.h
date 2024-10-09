@@ -14,44 +14,69 @@ class UDGHealthComponent;
 UCLASS()
 class DAEMONS_API ADGEnemy : public ACharacter, public IDGCombatInterface
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	ADGEnemy();
+    ADGEnemy();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
     TObjectPtr<UBehaviorTree> BehaviorTreeAsset;
 
-	// CombatInterface
-	virtual void DoLightMeeleAttack() override;
-	virtual void DoHeavyMeeleAttack() override;
-	virtual bool CanAttack() const override;
+    // CombatInterface
+    virtual void DoLightMeeleAttack() override;
+    virtual void DoHeavyMeeleAttack() override;
+
+    virtual void DoRangeAttack(const FVector& AimLocation) override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UDGHealthComponent> HealthComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
     TObjectPtr<UAnimMontage> ReactionAnimMontage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
     TObjectPtr<UAnimMontage> LightMeeleAttackMontage;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
+    TObjectPtr<UAnimMontage> RangeAttackMontage;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
     TArray<UAnimMontage*> DeathAnimMontages;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (Clampmin = "0", clampmax = "100"))
-	float DamageReactionChance{50.f};
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation", meta = (Clampmin = "0", clampmax = "100"))
+    float DamageReactionChance{50.f};
 
-	virtual void BeginPlay() override;
-	virtual void PostInitializeComponents() override;
-	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+    // for ranger
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
+    TSubclassOf<AActor> ProjectileClass;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
+    FName RightHandSocketName{"RightHandSocket"};
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
+    FName RangeAttackNotifyName{"RangeAttackNotify"};
 
-	UFUNCTION()
-	void OnBecomeDead();
+    virtual void BeginPlay() override;
+    virtual void PostInitializeComponents() override;
+    virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+public:
+    virtual void Tick(float DeltaTime) override;
+
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+    UFUNCTION()
+    void OnBecomeDead();
+
+private:
+    FVector KnownAimLocation{FVector::ZeroVector};
+
+    bool CanAttack() const;
+
+    void InitAnimationNotifies();
+    void HandleRangeAttack();
+
+    UFUNCTION()
+    void OnPlayMontageAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 };
