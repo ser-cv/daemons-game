@@ -17,6 +17,20 @@ public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
+
+    // Crouching
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Parameters")
+    float CrouchAnimationSpeed{50.f};
+
+    bool bIsCrouching{false};
+    bool bIsUncrouching{false};
+
+    float CrouchedHalfHeight;
+    float DefaultHalfHeight;
+    float NewHalfHeight;
+
     virtual void HandleCrouch() override;
     virtual void Interact() override;
 

@@ -3,8 +3,10 @@
 #include "Player/DGHumanCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interfaces/DGInteractionInterface.h"
+#include "Components/CapsuleComponent.h"
+#include "Kismet/KismetStringLibrary.h"
 
-void ADGHumanCharacter::PossessedBy(AController* NewController) 
+void ADGHumanCharacter::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
 }
@@ -14,25 +16,79 @@ void ADGHumanCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void ADGHumanCharacter::BeginPlay() 
+{
+    Super::BeginPlay();
+
+    DefaultHalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    CrouchedHalfHeight = CharacterMovementComp->GetCrouchedHalfHeight();
+}
+
+void ADGHumanCharacter::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+
+
+    // Crouching
+    if (bIsCrouching)
+    {
+        NewHalfHeight -= CrouchAnimationSpeed * DeltaTime;
+        NewHalfHeight = FMath::Clamp(NewHalfHeight, CrouchedHalfHeight, DefaultHalfHeight);
+        GetCapsuleComponent()->SetCapsuleHalfHeight(NewHalfHeight);
+        GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, FString::SanitizeFloat(NewHalfHeight));
+        
+        if (NewHalfHeight == CrouchedHalfHeight)
+        {
+            bIsCrouching = false;
+            Crouch();
+            SetActorTickEnabled(false);
+        }
+    }
+    else if (bIsUncrouching)
+    {
+        NewHalfHeight += CrouchAnimationSpeed * DeltaTime;
+        NewHalfHeight = FMath::Clamp(NewHalfHeight, CrouchedHalfHeight, DefaultHalfHeight);
+        GetCapsuleComponent()->SetCapsuleHalfHeight(NewHalfHeight);
+        GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, FString::SanitizeFloat(NewHalfHeight));
+
+        if (NewHalfHeight == DefaultHalfHeight)
+        {
+            bIsUncrouching = false;
+            bIsCrouchedState = false;
+            UnCrouch();
+            SetActorTickEnabled(false);
+        }
+    }
+    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, UKismetStringLibrary::Conv_BoolToString(bIsCrouchedState));
+}
+
 void ADGHumanCharacter::HandleCrouch()
 {
     if (CharacterMovementComp == nullptr) return;
-    if (bIsCrouching)
+    NewHalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    if (bIsCrouchedState)
     {
-        UnCrouch();
-        bIsCrouching = false;
+        SetActorTickEnabled(true);
+
+        bIsUncrouching = true;
     }
     else if (CharacterMovementComp->IsMovingOnGround())
     {
-        Crouch();
+        SetActorTickEnabled(true);
+
         bIsCrouching = true;
+        bIsCrouchedState = true;
         StopSprinting();
     }
 }
 
 void ADGHumanCharacter::HandleAcceleration()
 {
-    if (bIsCrouching) return;
+    if (bIsCrouchedState)
+    {
+        HandleCrouch();
+    }
+
     if (MovementInput.IsNearlyZero()) return;
 
     if (MovementInput.Y > 0)

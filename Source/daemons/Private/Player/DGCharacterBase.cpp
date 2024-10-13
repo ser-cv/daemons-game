@@ -14,7 +14,6 @@
 ADGCharacterBase::ADGCharacterBase(const FObjectInitializer& ObjectInitializer)
 {
     PrimaryActorTick.bCanEverTick = true;
-    SetActorTickEnabled(false);
 
     FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>("FirstPersonCamera");
     FirstPersonCameraComponent->SetupAttachment(GetRootComponent());
@@ -34,6 +33,9 @@ void ADGCharacterBase::BeginPlay()
 {
     Super::BeginPlay();
 
+    SetActorTickEnabled(false);
+
+    // Defaults
     CharacterMovementComp = GetCharacterMovement();
     DefaultWalkSpeed = CharacterMovementComp->MaxWalkSpeed;
 }
@@ -51,7 +53,7 @@ void ADGCharacterBase::Dash()
     if (bDashCooldown == false)
     {
         bDashCooldown = true;
-        SetActorTickEnabled(true);  // Check if it's not underperforming
+        SetActorTickEnabled(true);
         bIsDashing = true;
 
         // Set timer to stop dashing
@@ -66,8 +68,10 @@ void ADGCharacterBase::Dash()
 
 void ADGCharacterBase::StopDashing()
 {
-    SetActorTickEnabled(false);
     bIsDashing = false;
+
+    if (bIsCrouchedState) return;
+    SetActorTickEnabled(false);
 }
 
 void ADGCharacterBase::EndDashCooldown()
@@ -78,6 +82,13 @@ void ADGCharacterBase::EndDashCooldown()
 FVector ADGCharacterBase::CalculateDashForce()
 {
     FVector DashForce = GetVelocity();
+    DashForce.Z = 0;
+
+    if (DashForce.IsNearlyZero())
+    {
+        DashForce = GetActorForwardVector();
+    }
+
     DashForce.Normalize(0.0001);
 
     if (CharacterMovementComp->IsMovingOnGround())
@@ -88,7 +99,6 @@ FVector ADGCharacterBase::CalculateDashForce()
     {
         DashForce *= 50000 * DashSpeed;
     }
-    DashForce.Z = 0;
 
     return DashForce;
 }

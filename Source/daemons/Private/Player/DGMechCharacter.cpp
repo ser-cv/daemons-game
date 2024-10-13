@@ -17,8 +17,6 @@ void ADGMechCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void ADGMechCharacter::HandleAcceleration()
 {
-    if (MovementInput.IsNearlyZero()) return;
-
     Dash();
 }
 

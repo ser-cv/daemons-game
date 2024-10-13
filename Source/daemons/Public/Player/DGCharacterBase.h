@@ -128,13 +128,13 @@ protected:
     // States
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "States")
-    bool bIsCrouching{false};
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "States")
     bool bIsSprinting{false};
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "States")
     bool bIsDashing{false};
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "States")
+    bool bIsCrouchedState{false};
 
     bool bDashCooldown{false};
 
