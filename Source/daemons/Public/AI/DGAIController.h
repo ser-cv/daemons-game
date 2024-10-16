@@ -11,14 +11,13 @@ class UDGAIPerceptionComponent;
 UCLASS()
 class DAEMONS_API ADGAIController : public AAIController
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	ADGAIController();
-	
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    TObjectPtr<UDGAIPerceptionComponent> DGAIPerceptionComponent; 
+    ADGAIController();
 
-	virtual void OnPossess(APawn* InPawn) override;
+protected:
+    virtual void OnPossess(APawn* InPawn) override;
+
+    virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 };

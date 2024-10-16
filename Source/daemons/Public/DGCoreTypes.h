@@ -9,6 +9,15 @@ enum class EItemType : uint8
     EXTRA_WEAPON
 };
 
+UENUM(BlueprintType)
+enum class EAIBehaviorState : uint8
+{
+    No_Aim,
+    Sight_Detected,
+    Hearing_Detected,
+    Lost_Aim
+};
+
 USTRUCT(BlueprintType)
 struct FItemData
 {

@@ -5,11 +5,7 @@
 #include "AI/DGEnemy.h"
 #include "Components/DGAIPerceptionComponent.h"
 
-ADGAIController::ADGAIController() 
-{
-    DGAIPerceptionComponent = CreateDefaultSubobject<UDGAIPerceptionComponent>("AIPerceptionComponent");
-    SetPerceptionComponent(*DGAIPerceptionComponent.Get());
-}
+ADGAIController::ADGAIController() { }
 
 void ADGAIController::OnPossess(APawn* InPawn)
 {
@@ -19,4 +15,17 @@ void ADGAIController::OnPossess(APawn* InPawn)
     {
         RunBehaviorTree(AIEnemy->BehaviorTreeAsset);
     }
+
+    SetGenericTeamId(FGenericTeamId(5));
+}
+
+ETeamAttitude::Type ADGAIController::GetTeamAttitudeTowards(const AActor& Other) const
+{
+    const auto PlayerPawn = Cast<APawn>(&Other);
+    if (const auto PlayerController = Cast<APlayerController>(PlayerPawn->GetController()))
+    {
+        return ETeamAttitude::Hostile;
+    }
+
+    return Super::GetTeamAttitudeTowards(Other);
 }

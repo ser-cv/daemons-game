@@ -8,7 +8,7 @@
 
 UDGRangeAttackService::UDGRangeAttackService() 
 {
-    NodeName = "RangeAttackService";
+    NodeName = "Range Attack Service";
 }
 
 void UDGRangeAttackService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) 
@@ -25,7 +25,7 @@ void UDGRangeAttackService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
         {
             const auto AimActor = Cast<AActor>(Blackboard->GetValueAsObject(AimPawnKey.SelectedKeyName));
             const auto AimLocation = AimActor ? (AimActor->GetActorLocation() + AimActor->GetVelocity() / 2.f) : FVector::ZeroVector;
-            CombatInterface->DoRangeAttack(AimLocation);
+            CombatInterface->DoRangeAttack(AimLocation); // AnimMontage animation delay makes wrong Aim location, should sends Actor
         }
     }
 }

@@ -36,9 +36,9 @@ void ADGEnemy::DoHeavyMeeleAttack() {}
 
 void ADGEnemy::DoRangeAttack(const FVector& AimLocation)
 {
-   KnownAimLocation = AimLocation;
-   if (!CanAttack()) return;
-   PlayAnimMontage(RangeAttackMontage);
+    KnownAimLocation = AimLocation;
+    if (!CanAttack()) return;
+    PlayAnimMontage(RangeAttackMontage);
 }
 
 void ADGEnemy::BeginPlay()
@@ -114,7 +114,7 @@ void ADGEnemy::InitAnimationNotifies()
 
 void ADGEnemy::HandleRangeAttack() 
 {
-    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, "HandleRangeAttack");
+    //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "HandleRangeAttack");
     if (!GetWorld() || !GetMesh()) return;
 
     const FVector SocketLocation = GetMesh()->GetSocketLocation(RightHandSocketName);
@@ -126,7 +126,7 @@ void ADGEnemy::HandleRangeAttack()
 
 void ADGEnemy::OnPlayMontageAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload) 
 {
-    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, "OnPlayMontageAnimNotify");
+    //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "OnPlayMontageAnimNotify");
     if (NotifyName == RangeAttackNotifyName)
     {
         HandleRangeAttack();
