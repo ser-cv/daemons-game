@@ -1,11 +1,13 @@
 // For Daemons and something else videogame purpose only
 
-
 #include "AI/DGAIController.h"
 #include "AI/DGEnemy.h"
-#include "Components/DGAIPerceptionComponent.h"
+#include "Perception/AIPerceptionComponent.h"
 
-ADGAIController::ADGAIController() { }
+ADGAIController::ADGAIController()
+{
+    SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>("Perception"));
+}
 
 void ADGAIController::OnPossess(APawn* InPawn)
 {

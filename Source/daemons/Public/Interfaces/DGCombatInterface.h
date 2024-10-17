@@ -23,5 +23,5 @@ public:
 	virtual void DoLightMeeleAttack() = 0;
 	virtual void DoHeavyMeeleAttack() = 0;
 
-	virtual void DoRangeAttack(const FVector& AimLocation) = 0;
+	virtual void DoRangeAttack(AActor* AimActor) = 0;
 };

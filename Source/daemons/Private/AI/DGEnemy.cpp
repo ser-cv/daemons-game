@@ -34,9 +34,9 @@ void ADGEnemy::DoLightMeeleAttack()
 
 void ADGEnemy::DoHeavyMeeleAttack() {}
 
-void ADGEnemy::DoRangeAttack(const FVector& AimLocation)
+void ADGEnemy::DoRangeAttack(AActor* AimActor)
 {
-    KnownAimLocation = AimLocation;
+    FocusedAimActor = AimActor;
     if (!CanAttack()) return;
     PlayAnimMontage(RangeAttackMontage);
 }
@@ -115,13 +115,13 @@ void ADGEnemy::InitAnimationNotifies()
 void ADGEnemy::HandleRangeAttack() 
 {
     //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "HandleRangeAttack");
-    if (!GetWorld() || !GetMesh()) return;
+    if (!GetWorld() || !GetMesh() || !FocusedAimActor) return;
 
     const FVector SocketLocation = GetMesh()->GetSocketLocation(RightHandSocketName);
+    const FVector FocusedAimLocation = FocusedAimActor->GetActorLocation();
+    const auto Direction = (FocusedAimLocation - SocketLocation).GetSafeNormal();
 
-    const auto Direction = (KnownAimLocation - SocketLocation).GetSafeNormal();
-
-    DrawDebugLine(GetWorld(), SocketLocation, KnownAimLocation, FColor::Orange, false, 2.f, 0u, 2.f);
+    DrawDebugLine(GetWorld(), SocketLocation, FocusedAimLocation, FColor::Orange, false, 2.f, 0u, 2.f);
 }
 
 void ADGEnemy::OnPlayMontageAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload) 

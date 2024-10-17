@@ -24,8 +24,7 @@ void UDGRangeAttackService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
         if (CombatInterface)
         {
             const auto AimActor = Cast<AActor>(Blackboard->GetValueAsObject(AimPawnKey.SelectedKeyName));
-            const auto AimLocation = AimActor ? (AimActor->GetActorLocation() + AimActor->GetVelocity() / 2.f) : FVector::ZeroVector;
-            CombatInterface->DoRangeAttack(AimLocation); // AnimMontage animation delay makes wrong Aim location, should sends Actor
+            CombatInterface->DoRangeAttack(AimActor);
         }
     }
 }

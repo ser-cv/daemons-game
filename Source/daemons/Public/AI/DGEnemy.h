@@ -26,7 +26,7 @@ public:
     virtual void DoLightMeeleAttack() override;
     virtual void DoHeavyMeeleAttack() override;
 
-    virtual void DoRangeAttack(const FVector& AimLocation) override;
+    virtual void DoRangeAttack(AActor* AimActor) override;
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -70,7 +70,8 @@ public:
     void OnBecomeDead();
 
 private:
-    FVector KnownAimLocation{FVector::ZeroVector};
+    UPROPERTY()
+    TObjectPtr<AActor> FocusedAimActor;
 
     bool CanAttack() const;
 
