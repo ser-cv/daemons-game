@@ -2,7 +2,6 @@
 
 
 #include "AI/EQS/DGAimEnvQueryContext.h"
-
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_Actor.h"
 #include "BehaviorTree/Blackboardcomponent.h"
