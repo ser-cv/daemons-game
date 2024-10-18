@@ -1,7 +1,7 @@
 // For Daemons and something else videogame purpose only
 
 #include "AI/DGAIController.h"
-#include "AI/DGEnemy.h"
+#include "AI/DGAICharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 
 ADGAIController::ADGAIController()
@@ -13,9 +13,9 @@ void ADGAIController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
 
-    if (const auto AIEnemy = Cast<ADGEnemy>(InPawn))
+    if (const auto AICharacter = Cast<ADGAICharacter>(InPawn))
     {
-        RunBehaviorTree(AIEnemy->BehaviorTreeAsset);
+        RunBehaviorTree(AICharacter->BehaviorTreeAsset);
     }
 
     SetGenericTeamId(FGenericTeamId(5));

@@ -5,19 +5,19 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/DGCombatInterface.h"
-#include "DGEnemy.generated.h"
+#include "DGAICharacter.generated.h"
 
 class UBehaviorTree;
 class UAnimMontage;
 class UDGHealthComponent;
 
 UCLASS()
-class DAEMONS_API ADGEnemy : public ACharacter, public IDGCombatInterface
+class DAEMONS_API ADGAICharacter : public ACharacter, public IDGCombatInterface
 {
     GENERATED_BODY()
 
 public:
-    ADGEnemy();
+    ADGAICharacter();
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
     TObjectPtr<UBehaviorTree> BehaviorTreeAsset;

@@ -1,18 +1,18 @@
 // For Daemons and something else videogame purpose only
 
 
-#include "AI/Tasks/BTTaskGetSoundSourceLocation.h"
+#include "AI/Tasks/DGBTTaskGetSoundSourceLocation.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 #include "Perception/AIPerceptionComponent.h"
 
-UBTTaskGetSoundSourceLocation::UBTTaskGetSoundSourceLocation() 
+UDGBTTaskGetSoundSourceLocation::UDGBTTaskGetSoundSourceLocation() 
 {
     NodeName = "Get Sound Source Location";
     AimLocationKey.AddVectorFilter(this, "Aim Location");
 }
 
-EBTNodeResult::Type UBTTaskGetSoundSourceLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UDGBTTaskGetSoundSourceLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
     const auto AIController = OwnerComp.GetAIOwner();
     if (!AIController) return EBTNodeResult::Failed;

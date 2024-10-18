@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTaskGetSoundSourceLocation.generated.h"
+#include "DGBTTaskGetSoundSourceLocation.generated.h"
 
 
 UCLASS()
-class DAEMONS_API UBTTaskGetSoundSourceLocation : public UBTTaskNode
+class DAEMONS_API UDGBTTaskGetSoundSourceLocation : public UBTTaskNode
 {
 	GENERATED_BODY()
 
-	UBTTaskGetSoundSourceLocation();
+	UDGBTTaskGetSoundSourceLocation();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")

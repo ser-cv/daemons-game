@@ -1,6 +1,6 @@
 // For Daemons and something else videogame purpose only
 
-#include "AI/DGEnemy.h"
+#include "AI/DGAICharacter.h"
 #include "AI/DGAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/DGHealthComponent.h"
@@ -9,7 +9,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
 
-ADGEnemy::ADGEnemy()
+ADGAICharacter::ADGAICharacter()
 {
     AutoPossessAI = EAutoPossessAI::Disabled;
     AIControllerClass = ADGAIController::StaticClass();
@@ -26,39 +26,39 @@ ADGEnemy::ADGEnemy()
     HealthComponent = CreateDefaultSubobject<UDGHealthComponent>("HealthComponent");
 }
 
-void ADGEnemy::DoLightMeeleAttack()
+void ADGAICharacter::DoLightMeeleAttack()
 {
     if (!CanAttack()) return;
     PlayAnimMontage(LightMeeleAttackMontage);
 }
 
-void ADGEnemy::DoHeavyMeeleAttack() {}
+void ADGAICharacter::DoHeavyMeeleAttack() {}
 
-void ADGEnemy::DoRangeAttack(AActor* AimActor)
+void ADGAICharacter::DoRangeAttack(AActor* AimActor)
 {
     FocusedAimActor = AimActor;
     if (!CanAttack()) return;
     PlayAnimMontage(RangeAttackMontage);
 }
 
-void ADGEnemy::BeginPlay()
+void ADGAICharacter::BeginPlay()
 {
     Super::BeginPlay();
 }
 
-void ADGEnemy::PostInitializeComponents()
+void ADGAICharacter::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
 
     if (HealthComponent && !HealthComponent->OnBecomeDead.IsBound())
     {
-        HealthComponent->OnBecomeDead.AddUniqueDynamic(this, &ADGEnemy::OnBecomeDead);
+        HealthComponent->OnBecomeDead.AddUniqueDynamic(this, &ADGAICharacter::OnBecomeDead);
     }
 
     InitAnimationNotifies();
 }
 
-float ADGEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float ADGAICharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
     const bool bIsChance = (FMath::SRand() * 100.f) < DamageReactionChance;
     const bool bCanReaction = bIsChance && (!GetCurrentMontage() || (GetCurrentMontage() != ReactionAnimMontage.Get()));
@@ -70,18 +70,18 @@ float ADGEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContr
     return Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 }
 
-void ADGEnemy::Tick(float DeltaTime)
+void ADGAICharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
     GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, FString::Printf(TEXT("%s"), GetCurrentMontage() ? TEXT("false") : TEXT("true")));
 }
 
-void ADGEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ADGAICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void ADGEnemy::OnBecomeDead()
+void ADGAICharacter::OnBecomeDead()
 {
     GetCharacterMovement()->DisableMovement();
 
@@ -99,20 +99,20 @@ void ADGEnemy::OnBecomeDead()
     }
 }
 
-bool ADGEnemy::CanAttack() const
+bool ADGAICharacter::CanAttack() const
 {
     return GetCurrentMontage() ? false : true;
 }
 
-void ADGEnemy::InitAnimationNotifies() 
+void ADGAICharacter::InitAnimationNotifies() 
 {
     if (GetMesh() && GetMesh()->GetAnimInstance())
     {
-        GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &ADGEnemy::OnPlayMontageAnimNotify);
+        GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &ADGAICharacter::OnPlayMontageAnimNotify);
     }
 }
 
-void ADGEnemy::HandleRangeAttack() 
+void ADGAICharacter::HandleRangeAttack() 
 {
     //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "HandleRangeAttack");
     if (!GetWorld() || !GetMesh() || !FocusedAimActor) return;
@@ -124,7 +124,7 @@ void ADGEnemy::HandleRangeAttack()
     DrawDebugLine(GetWorld(), SocketLocation, FocusedAimLocation, FColor::Orange, false, 2.f, 0u, 2.f);
 }
 
-void ADGEnemy::OnPlayMontageAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload) 
+void ADGAICharacter::OnPlayMontageAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload) 
 {
     //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "OnPlayMontageAnimNotify");
     if (NotifyName == RangeAttackNotifyName)
