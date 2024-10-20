@@ -33,6 +33,7 @@ protected:
 
     virtual void HandleCrouch() override;
     virtual void Interact() override;
+    virtual void CancelInteraction() override;
 
     // Sprint and dash
     virtual void HandleAcceleration() override;

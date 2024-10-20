@@ -18,6 +18,7 @@ class DAEMONS_API ADGMechCharacter : public ADGCharacterBase
 protected:
     virtual void HandleCrouch() override;
     virtual void Interact() override;
+    virtual void CancelInteraction() override;
 
     virtual void HandleAcceleration() override;
     virtual void Sprint() override;

@@ -5,6 +5,9 @@
 #include "Interfaces/DGInteractionInterface.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetStringLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "MechDummy.h"
+#include "Player/DGPlayerController.h"
 
 void ADGHumanCharacter::PossessedBy(AController* NewController)
 {
@@ -145,6 +148,19 @@ void ADGHumanCharacter::Interact()
         UE_LOG(LogTemp, Display, TEXT("%s"), *HitResult.GetActor()->GetName());
     }
 
+    // Enter Mech if interacting with it
+    if (AMechDummy* MechDummy = Cast<AMechDummy>(HitResult.GetActor()))
+    {
+        MechDummy->Interact();
+
+        // TODO: create mech entering animation and then call function at the end of anim
+        ADGPlayerController* PlayerController = Cast<ADGPlayerController>(
+            UGameplayStatics::GetPlayerController(this, 0));
+        PlayerController->CreateAndPossessMech(MechDummy->GetActorTransform());
+        MechDummy->Interact();
+        return;
+    }
+
     if (const auto ActorToInteract = Cast<IDGInteractionInterface>(HitResult.GetActor()))
     {
         if (ActorToInteract->CanTakeInHands())
@@ -171,3 +187,5 @@ void ADGHumanCharacter::Interact()
         }
     }
 }
+
+void ADGHumanCharacter::CancelInteraction() {}

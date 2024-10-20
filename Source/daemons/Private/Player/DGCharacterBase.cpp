@@ -152,7 +152,8 @@ void ADGCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
         EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &ADGCharacterBase::HandleCrouch);
 
-        EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ADGCharacterBase::Interact);
+        EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ADGCharacterBase::Interact);
+        EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ADGCharacterBase::CancelInteraction);
     }
 }
 

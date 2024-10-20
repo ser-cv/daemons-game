@@ -144,6 +144,7 @@ protected:
     virtual void Look(const FInputActionValue& Value);
     virtual void HandleCrouch() PURE_VIRTUAL(ADGCharacterBase::HandleCrouch, );
     virtual void Interact() PURE_VIRTUAL(ADGCharacterBase::Interact, );
+    virtual void CancelInteraction() PURE_VIRTUAL(ADGCharacterBase::CancelInteraction, );
 
     // Sprint and dash
     virtual void HandleAcceleration() PURE_VIRTUAL(ADGCharacterBase::HandleAcceleration, );

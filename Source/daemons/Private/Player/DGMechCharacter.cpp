@@ -29,3 +29,5 @@ void ADGMechCharacter::HandleCrouch() {}
 void ADGMechCharacter::Interact() {
    
 }
+
+void ADGMechCharacter::CancelInteraction() {}
