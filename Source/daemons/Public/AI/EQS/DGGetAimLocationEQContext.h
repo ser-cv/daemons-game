@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "EnvironmentQuery/EnvQueryContext.h"
-#include "DGSoundSourceLocEnvQueryContext.generated.h"
+#include "DGGetAimLocationEQContext.generated.h"
 
 
 UCLASS()
-class DAEMONS_API UDGSoundSourceLocEnvQueryContext : public UEnvQueryContext
+class DAEMONS_API UDGGetAimLocationEQContext : public UEnvQueryContext
 {
 	GENERATED_BODY()
 	

@@ -4,23 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "DGBTTaskGetSoundSourceLocation.generated.h"
-
+#include "DGBTTaskRememberLastLocation.generated.h"
 
 UCLASS()
-class DAEMONS_API UDGBTTaskGetSoundSourceLocation : public UBTTaskNode
+class DAEMONS_API UDGBTTaskRememberLastLocation : public UBTTaskNode
 {
 	GENERATED_BODY()
 
-	UDGBTTaskGetSoundSourceLocation();
+	UDGBTTaskRememberLastLocation();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-    FBlackboardKeySelector HeardAimKey;
+    FBlackboardKeySelector InstigatorKey;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-    FBlackboardKeySelector AimLocationKey;
+    FBlackboardKeySelector LastSeenLocationKey;
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	
 };
