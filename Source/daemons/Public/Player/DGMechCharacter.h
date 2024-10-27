@@ -16,6 +16,8 @@ class DAEMONS_API ADGMechCharacter : public ADGCharacterBase
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
+    FTimerHandle LeaveMechTimerHandle;
+
     virtual void HandleCrouch() override;
     virtual void Interact() override;
     virtual void CancelInteraction() override;
@@ -23,4 +25,7 @@ protected:
     virtual void HandleAcceleration() override;
     virtual void Sprint() override;
     virtual void StopSprinting() override;
+
+    UPROPERTY(EditAnywhere, Category = "Parameters")
+    float MechExitDelay{0.7f};
 };

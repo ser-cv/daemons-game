@@ -14,6 +14,11 @@ class DAEMONS_API ADGPlayerController : public APlayerController
 public:
     void CreateAndPossessMech(FTransform MechDummyTransform);
 
+    void CreateAndPossessHuman();
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Characters")
+    TSubclassOf<AActor> MechDummy;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Characters")
     TSubclassOf<ACharacter> MechCharacter;
 

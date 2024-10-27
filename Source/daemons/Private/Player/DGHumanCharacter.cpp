@@ -31,7 +31,6 @@ void ADGHumanCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-
     // Crouching
     if (bIsCrouching)
     {
@@ -154,8 +153,6 @@ void ADGHumanCharacter::Interact()
         MechDummy->Interact();
 
         // TODO: create mech entering animation and then call function at the end of anim
-        ADGPlayerController* PlayerController = Cast<ADGPlayerController>(
-            UGameplayStatics::GetPlayerController(this, 0));
         PlayerController->CreateAndPossessMech(MechDummy->GetActorTransform());
         MechDummy->Interact();
         return;

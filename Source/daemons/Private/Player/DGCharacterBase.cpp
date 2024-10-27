@@ -10,6 +10,8 @@
 #include "Components/DGHealthComponent.h"
 #include "Interfaces/DGInteractionInterface.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/DGPlayerController.h"
 
 ADGCharacterBase::ADGCharacterBase(const FObjectInitializer& ObjectInitializer)
 {
@@ -81,7 +83,7 @@ void ADGCharacterBase::EndDashCooldown()
 
 FVector ADGCharacterBase::CalculateDashForce()
 {
-    FVector DashForce = GetVelocity();
+    FVector DashForce = MovementInput.X * GetActorRightVector() + MovementInput.Y * GetActorForwardVector();
     DashForce.Z = 0;
 
     if (DashForce.IsNearlyZero())
@@ -118,7 +120,8 @@ void ADGCharacterBase::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
 
-    if (const APlayerController* PlayerController = Cast<APlayerController>(NewController))
+    PlayerController = Cast<ADGPlayerController>(NewController);
+    if (PlayerController)
     {
         if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
         {

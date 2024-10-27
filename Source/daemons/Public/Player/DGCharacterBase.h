@@ -14,6 +14,7 @@ class UInputMappingContext;
 struct FInputActionValue;
 class UDGWeaponComponent;
 class UDGHealthComponent;
+class ADGPlayerController;
 
 UCLASS()
 class DAEMONS_API ADGCharacterBase : public ACharacter
@@ -99,6 +100,8 @@ protected:
     TObjectPtr<UDGHealthComponent> HealthComponent;
 
     UCharacterMovementComponent* CharacterMovementComp;
+
+    ADGPlayerController* PlayerController;
 
     // Parameters
 
