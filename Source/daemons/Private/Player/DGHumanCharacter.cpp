@@ -37,7 +37,6 @@ void ADGHumanCharacter::Tick(float DeltaTime)
         NewHalfHeight -= CrouchAnimationSpeed * DeltaTime;
         NewHalfHeight = FMath::Clamp(NewHalfHeight, CrouchedHalfHeight, DefaultHalfHeight);
         GetCapsuleComponent()->SetCapsuleHalfHeight(NewHalfHeight);
-        GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, FString::SanitizeFloat(NewHalfHeight));
         
         if (NewHalfHeight == CrouchedHalfHeight)
         {
@@ -51,7 +50,6 @@ void ADGHumanCharacter::Tick(float DeltaTime)
         NewHalfHeight += CrouchAnimationSpeed * DeltaTime;
         NewHalfHeight = FMath::Clamp(NewHalfHeight, CrouchedHalfHeight, DefaultHalfHeight);
         GetCapsuleComponent()->SetCapsuleHalfHeight(NewHalfHeight);
-        GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, FString::SanitizeFloat(NewHalfHeight));
 
         if (NewHalfHeight == DefaultHalfHeight)
         {
@@ -61,7 +59,6 @@ void ADGHumanCharacter::Tick(float DeltaTime)
             SetActorTickEnabled(false);
         }
     }
-    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, UKismetStringLibrary::Conv_BoolToString(bIsCrouchedState));
 }
 
 void ADGHumanCharacter::HandleCrouch()
