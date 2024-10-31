@@ -10,6 +10,7 @@
 class UBehaviorTree;
 class UAnimMontage;
 class UDGHealthComponent;
+class ADGPatrolRoute;
 
 UCLASS()
 class DAEMONS_API ADGAICharacter : public ACharacter, public IDGCombatInterface
@@ -57,6 +58,10 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Attack")
     FName RangeAttackNotifyName{"RangeAttackNotify"};
 
+    // for patrol
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patrol")
+    TObjectPtr<ADGPatrolRoute> PatrolRoute;
+
     virtual void BeginPlay() override;
     virtual void PostInitializeComponents() override;
     virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -69,9 +74,16 @@ public:
     UFUNCTION()
     void OnBecomeDead();
 
+    // for patrol
+    void GetDistanceClosestToLocation();
+    FVector GetPatrolRouteLocation() const;
+    void UpdatePatrolRouteDistance();
+
 private:
     UPROPERTY()
     TObjectPtr<AActor> FocusedAimActor;
+
+    float PatrolRouteDistance{0.f};
 
     bool CanAttack() const;
 

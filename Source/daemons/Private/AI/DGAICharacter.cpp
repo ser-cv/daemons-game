@@ -8,6 +8,7 @@
 #include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
+#include "UsableActors/DGPatrolRoute.h"
 
 ADGAICharacter::ADGAICharacter()
 {
@@ -44,6 +45,8 @@ void ADGAICharacter::DoRangeAttack(AActor* AimActor)
 void ADGAICharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    GetDistanceClosestToLocation();
 }
 
 void ADGAICharacter::PostInitializeComponents()
@@ -99,12 +102,31 @@ void ADGAICharacter::OnBecomeDead()
     }
 }
 
+void ADGAICharacter::GetDistanceClosestToLocation()
+{
+    if (!PatrolRoute) return;
+    PatrolRouteDistance = PatrolRoute->GetDistanceClosestToLocation(GetActorLocation());
+}
+
+FVector ADGAICharacter::GetPatrolRouteLocation() const
+{
+    if (!PatrolRoute) return FVector();
+    return PatrolRoute->GetPatrolRouteLocationAtDistance(PatrolRouteDistance);
+}
+
+void ADGAICharacter::UpdatePatrolRouteDistance()
+{
+    if (!PatrolRoute) return;
+    const float NewDistance = PatrolRouteDistance + PatrolRoute->GetPartOfPatrolRouteLenght();
+    PatrolRouteDistance = NewDistance < PatrolRoute->GetPatrolRouteLenght() ? NewDistance : NewDistance - PatrolRoute->GetPatrolRouteLenght();
+}
+
 bool ADGAICharacter::CanAttack() const
 {
     return GetCurrentMontage() ? false : true;
 }
 
-void ADGAICharacter::InitAnimationNotifies() 
+void ADGAICharacter::InitAnimationNotifies()
 {
     if (GetMesh() && GetMesh()->GetAnimInstance())
     {
@@ -112,9 +134,9 @@ void ADGAICharacter::InitAnimationNotifies()
     }
 }
 
-void ADGAICharacter::HandleRangeAttack() 
+void ADGAICharacter::HandleRangeAttack()
 {
-    //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "HandleRangeAttack");
+    // GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "HandleRangeAttack");
     if (!GetWorld() || !GetMesh() || !FocusedAimActor) return;
 
     const FVector SocketLocation = GetMesh()->GetSocketLocation(RightHandSocketName);
@@ -124,9 +146,9 @@ void ADGAICharacter::HandleRangeAttack()
     DrawDebugLine(GetWorld(), SocketLocation, FocusedAimLocation, FColor::Orange, false, 2.f, 0u, 2.f);
 }
 
-void ADGAICharacter::OnPlayMontageAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload) 
+void ADGAICharacter::OnPlayMontageAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
 {
-    //GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "OnPlayMontageAnimNotify");
+    // GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "OnPlayMontageAnimNotify");
     if (NotifyName == RangeAttackNotifyName)
     {
         HandleRangeAttack();
