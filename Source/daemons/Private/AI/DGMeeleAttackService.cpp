@@ -18,7 +18,8 @@ void UDGMeeleAttackService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 
     if (AIController && Blackboard) 
     {
-        const FVector AimLocation = Blackboard->GetValueAsVector(AimPawnLocationKey.SelectedKeyName);
+        const auto AimActor = Cast<AActor>(Blackboard->GetValueAsObject(AimPawnLocationKey.SelectedKeyName));
+        const FVector AimLocation = AimActor ? AimActor->GetActorLocation() : FVector(); //Blackboard->GetValueAsVector(AimPawnLocationKey.SelectedKeyName);
         TryAttackAim(AIController, AimLocation);
     }
 }

@@ -29,6 +29,7 @@ ADGAICharacter::ADGAICharacter()
 
 void ADGAICharacter::DoLightMeeleAttack()
 {
+    GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "DoLightMeeleAttack");
     if (!CanAttack()) return;
     PlayAnimMontage(LightMeeleAttackMontage);
 }

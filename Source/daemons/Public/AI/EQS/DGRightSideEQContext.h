@@ -17,5 +17,5 @@ public:
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-    FName AimKeyName{"SeenAim"};
+	FName AimKeyName{"EnemyActor"};
 };

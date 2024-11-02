@@ -21,6 +21,16 @@ void ADGAIController::OnPossess(APawn* InPawn)
     SetGenericTeamId(FGenericTeamId(5));
 }
 
+void ADGAIController::SetGenericTeamId(const FGenericTeamId& NewTeamID) 
+{
+    Super::SetGenericTeamId(NewTeamID);
+    
+    //if (GetPerceptionComponent())
+    //{
+    //    UAIPerceptionSystem::GetCurrent(GetWorld())->UpdateListener(*GetPerceptionComponent());
+    //}
+}
+
 ETeamAttitude::Type ADGAIController::GetTeamAttitudeTowards(const AActor& Other) const
 {
     const auto PlayerPawn = Cast<APawn>(&Other);

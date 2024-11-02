@@ -13,8 +13,10 @@ UENUM(BlueprintType)
 enum class EAIBehaviorState : uint8
 {
     No_Aim,
+    Damage_Received,
     Sight_Detected,
     Hearing_Detected,
+    Team_Reported,
     Lost_Aim
 };
 
