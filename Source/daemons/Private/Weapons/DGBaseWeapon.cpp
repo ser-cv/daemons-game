@@ -2,6 +2,7 @@
 
 #include "Weapons/DGBaseWeapon.h"
 #include "Engine/DamageEvents.h"
+#include "Perception/AISense_Damage.h"
 #include "DrawDebugHelpers.h"
 
 ADGBaseWeapon::ADGBaseWeapon()
@@ -132,6 +133,9 @@ void ADGBaseWeapon::MakeDamage(const FHitResult& Hit)
     const auto DamagedActor = Hit.GetActor();
     if (!DamagedActor) return;
     DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
+
+    /* this event used in behavior tree, receiving damage sence from perception component */
+    UAISense_Damage::ReportDamageEvent(GetWorld(), DamagedActor, GetOwner(), DamageAmount, Hit.TraceStart, Hit.Location);
 }
 
 void ADGBaseWeapon::ChangeAmmo(int32 Amount)

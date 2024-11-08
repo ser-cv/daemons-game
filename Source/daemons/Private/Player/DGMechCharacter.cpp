@@ -1,17 +1,16 @@
 // For Daemons and something else videogame purpose only
 
-
 #include "Player/DGMechCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interfaces/DGInteractionInterface.h"
 #include "Player/DGPlayerController.h"
 
-void ADGMechCharacter::PossessedBy(AController* NewController) 
+void ADGMechCharacter::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
 }
 
-void ADGMechCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) 
+void ADGMechCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
@@ -27,13 +26,14 @@ void ADGMechCharacter::StopSprinting() {}
 
 void ADGMechCharacter::HandleCrouch() {}
 
-void ADGMechCharacter::Interact() 
+void ADGMechCharacter::Interact()
 {
-   GetWorld()->GetTimerManager().SetTimer(
-        LeaveMechTimerHandle, PlayerController, &ADGPlayerController::CreateAndPossessHuman, MechExitDelay, false);
+    if (!GetWorld()) return;
+    GetWorld()->GetTimerManager().SetTimer(LeaveMechTimerHandle, PlayerController.Get(), &ADGPlayerController::CreateAndPossessHuman, MechExitDelay, false);
 }
 
-void ADGMechCharacter::CancelInteraction() 
+void ADGMechCharacter::CancelInteraction()
 {
+    if (!GetWorld()) return;
     GetWorld()->GetTimerManager().ClearTimer(LeaveMechTimerHandle);
 }

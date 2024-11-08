@@ -99,9 +99,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UDGHealthComponent> HealthComponent;
 
-    UCharacterMovementComponent* CharacterMovementComp;
+    TObjectPtr<UCharacterMovementComponent> CharacterMovementComp;
 
-    ADGPlayerController* PlayerController;
+    TObjectPtr<ADGPlayerController> PlayerController;
 
     // Parameters
 

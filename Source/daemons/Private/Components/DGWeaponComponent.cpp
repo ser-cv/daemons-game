@@ -37,23 +37,20 @@ void UDGWeaponComponent::SwitchWeapons()
 
 void UDGWeaponComponent::StartFire()
 {
-    // Crashes editor (assertion failed)
-    //if (!WearableWeapons[ArmedWeaponType]) return;
-    //WearableWeapons[ArmedWeaponType]->StartFire();
+    if (!WearableWeapons.FindRef(ArmedWeaponType)) return;
+    WearableWeapons[ArmedWeaponType]->StartFire();
 }
 
 void UDGWeaponComponent::StopFire()
 {
-    // Crashes editor (assertion failed)
-    //if (!WearableWeapons[ArmedWeaponType]) return;
-    //WearableWeapons[ArmedWeaponType]->StopFire();
+    if (!WearableWeapons.FindRef(ArmedWeaponType)) return;
+    WearableWeapons[ArmedWeaponType]->StopFire();
 }
 
 void UDGWeaponComponent::ReloadWeapon()
 {
-    // Crashes editor (assertion failed)
-    //if (!WearableWeapons[ArmedWeaponType]) return;
-    //WearableWeapons[ArmedWeaponType]->StartReloading();
+    if (!WearableWeapons.FindRef(ArmedWeaponType)) return;
+    WearableWeapons[ArmedWeaponType]->StartReloading();
 }
 
 void UDGWeaponComponent::SpawnWeaponByType(UClass* WeaponClass, EItemType WeaponType)
