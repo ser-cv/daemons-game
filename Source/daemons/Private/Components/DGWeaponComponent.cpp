@@ -24,36 +24,6 @@ void UDGWeaponComponent::InitWeapons()
     SpawnWeaponByType(MainWeaponClass, EItemType::MAIN_WEAPON);
     AttachWeaponToSocket(EItemType::MAIN_WEAPON, ArmedWeaponSocketName);
     ArmedWeaponType = EItemType::MAIN_WEAPON;
-    SpawnWeaponByType(ExtraWeaponClass, EItemType::EXTRA_WEAPON);
-    AttachWeaponToSocket(EItemType::EXTRA_WEAPON, HolsteredWeaponSocketName);
-}
-
-void UDGWeaponComponent::SwitchWeapons()
-{
-    AttachWeaponToSocket(ArmedWeaponType, HolsteredWeaponSocketName);
-    ArmedWeaponType = ArmedWeaponType == EItemType::MAIN_WEAPON ? EItemType::EXTRA_WEAPON : EItemType::MAIN_WEAPON;
-    AttachWeaponToSocket(ArmedWeaponType, ArmedWeaponSocketName);
-}
-
-void UDGWeaponComponent::StartFire()
-{
-    // Crashes editor (assertion failed)
-    //if (!WearableWeapons[ArmedWeaponType]) return;
-    //WearableWeapons[ArmedWeaponType]->StartFire();
-}
-
-void UDGWeaponComponent::StopFire()
-{
-    // Crashes editor (assertion failed)
-    //if (!WearableWeapons[ArmedWeaponType]) return;
-    //WearableWeapons[ArmedWeaponType]->StopFire();
-}
-
-void UDGWeaponComponent::ReloadWeapon()
-{
-    // Crashes editor (assertion failed)
-    //if (!WearableWeapons[ArmedWeaponType]) return;
-    //WearableWeapons[ArmedWeaponType]->StartReloading();
 }
 
 void UDGWeaponComponent::SpawnWeaponByType(UClass* WeaponClass, EItemType WeaponType)

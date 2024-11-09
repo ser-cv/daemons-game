@@ -21,14 +21,8 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ForTesting")
     TSubclassOf<ADGBaseWeapon> MainWeaponClass;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ForTesting")
-    TSubclassOf<ADGBaseWeapon> ExtraWeaponClass;
-
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     FName ArmedWeaponSocketName{"ArmedWeaponSocket"};
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-    FName HolsteredWeaponSocketName{"HolsteredWeaponSocket"};
 
     virtual void BeginPlay() override;
 
@@ -37,12 +31,6 @@ public:
 
     void SetCompToAttachWeapons(USceneComponent* NewComp) { CompToAttachWeapons = NewComp; };
     void InitWeapons();
-    void SwitchWeapons();
-
-    void StartFire();
-    void StopFire();
-
-    void ReloadWeapon();
 
 private:
     UPROPERTY()

@@ -5,8 +5,7 @@
 UENUM(BlueprintType)
 enum class EItemType : uint8
 {
-    MAIN_WEAPON,
-    EXTRA_WEAPON
+    MAIN_WEAPON
 };
 
 USTRUCT(BlueprintType)
