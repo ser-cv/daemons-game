@@ -27,10 +27,13 @@ void ADGMechCharacter::StopSprinting() {}
 
 void ADGMechCharacter::HandleCrouch() {}
 
-void ADGMechCharacter::Interact() 
+void ADGMechCharacter::Interact()
 {
-   GetWorld()->GetTimerManager().SetTimer(
-        LeaveMechTimerHandle, PlayerController, &ADGPlayerController::CreateAndPossessHuman, MechExitDelay, false);
+    if (UWorld* CurrentWorld = GetWorld())
+    {
+        CurrentWorld->GetTimerManager().SetTimer(
+            LeaveMechTimerHandle, PlayerController, &ADGPlayerController::CreateAndPossessHuman, MechExitDelay, false);
+    }
 }
 
 void ADGMechCharacter::CancelInteraction() 

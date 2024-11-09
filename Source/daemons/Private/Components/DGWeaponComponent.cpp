@@ -26,6 +26,69 @@ void UDGWeaponComponent::InitWeapons()
     ArmedWeaponType = EItemType::MAIN_WEAPON;
 }
 
+void UDGWeaponComponent::TryToSwitchWeapon(int SlotIndex) 
+{
+    if (CanSwitch == false) return;
+
+
+    PreviousActiveWeaponSlot = ActiveWeaponSlot;
+    ActiveWeaponSlot = SlotIndex;
+}
+
+void UDGWeaponComponent::HandleLastWeaponInput()
+{
+    TryToSwitchWeapon(PreviousActiveWeaponSlot);
+}
+
+void UDGWeaponComponent::HandleNextWeaponInput()
+{
+    if (ActiveWeaponSlot < 4)
+    {
+        TryToSwitchWeapon(ActiveWeaponSlot + 1);
+    }
+    else
+    {
+        TryToSwitchWeapon(0);
+    }
+}
+
+void UDGWeaponComponent::HandlePreviousWeaponInput()
+{
+    if (ActiveWeaponSlot > 0)
+    {
+        TryToSwitchWeapon(ActiveWeaponSlot - 1);
+    }
+    else
+    {
+        TryToSwitchWeapon(4);
+    }
+}
+
+void UDGWeaponComponent::HandleSlotOneInput()
+{
+    TryToSwitchWeapon(0);
+}
+
+void UDGWeaponComponent::HandleSlotTwoInput()
+{
+    TryToSwitchWeapon(1);
+}
+
+void UDGWeaponComponent::HandleSlotThreeInput()
+{
+    TryToSwitchWeapon(2);
+}
+
+void UDGWeaponComponent::HandleSlotFourInput()
+{
+    TryToSwitchWeapon(3);
+}
+
+void UDGWeaponComponent::HandleSlotFiveInput()
+{
+    TryToSwitchWeapon(4);
+}
+
 void UDGWeaponComponent::SpawnWeaponByType(UClass* WeaponClass, EItemType WeaponType)
 {
     if (!WeaponClass || !GetWorld()) return;

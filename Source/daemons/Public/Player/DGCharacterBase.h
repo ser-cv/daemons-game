@@ -62,7 +62,7 @@ protected:
 
     // Weapon switch actions
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<UInputAction> SwitchWeaponAction;
+    TObjectPtr<UInputAction> LastWeaponAction;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UInputAction> NextWeaponAction;
@@ -99,8 +99,10 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UDGHealthComponent> HealthComponent;
 
-    UCharacterMovementComponent* CharacterMovementComp;
+    UPROPERTY()
+    TObjectPtr<UCharacterMovementComponent> CharacterMovementComp;
 
+    UPROPERTY()
     ADGPlayerController* PlayerController;
 
     // Parameters

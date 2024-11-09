@@ -52,20 +52,22 @@ void ADGCharacterBase::Tick(float DeltaTime)
 
 void ADGCharacterBase::Dash()
 {
-    if (bDashCooldown == false)
-    {
-        bDashCooldown = true;
-        SetActorTickEnabled(true);
-        bIsDashing = true;
+    if (bDashCooldown == false) return;
 
-        // Set timer to stop dashing
-        FTimerHandle TimerHandle;
-        GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ADGCharacterBase::StopDashing, DashActiveTime, false);
+    UWorld* CurrentWorld = GetWorld();
+    if (CurrentWorld == nullptr) return;
 
-        // Set timer for dash cooldown
-        FTimerHandle TimerHandleCD;
-        GetWorld()->GetTimerManager().SetTimer(TimerHandleCD, this, &ADGCharacterBase::EndDashCooldown, DashCooldownTime, false);
-    }
+    bDashCooldown = true;
+    SetActorTickEnabled(true);
+    bIsDashing = true;
+
+    // Set timer to stop dashing
+    FTimerHandle TimerHandle;
+    CurrentWorld->GetTimerManager().SetTimer(TimerHandle, this, &ADGCharacterBase::StopDashing, DashActiveTime, false);
+
+    // Set timer for dash cooldown end
+    FTimerHandle TimerHandleCD;
+    CurrentWorld->GetTimerManager().SetTimer(TimerHandleCD, this, &ADGCharacterBase::EndDashCooldown, DashCooldownTime, false);
 }
 
 void ADGCharacterBase::StopDashing()
@@ -144,12 +146,10 @@ void ADGCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
-        EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::StartFire);
-        EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::StopFire);
+        //EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::StartFire);
+        //EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::StopFire);
 
-        EnhancedInputComponent->BindAction(SwitchWeaponAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::SwitchWeapons);
-
-        EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::ReloadWeapon);
+        //EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::ReloadWeapon);
 
         EnhancedInputComponent->BindAction(AccelerateAction, ETriggerEvent::Started, this, &ADGCharacterBase::HandleAcceleration);
 
@@ -157,6 +157,17 @@ void ADGCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
         EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ADGCharacterBase::Interact);
         EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ADGCharacterBase::CancelInteraction);
+    
+        // Weapon switch
+        EnhancedInputComponent->BindAction(LastWeaponAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::);
+        EnhancedInputComponent->BindAction(NextWeaponAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::);
+        EnhancedInputComponent->BindAction(PreviousWeaponAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::);
+        EnhancedInputComponent->BindAction(SlotOneAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleSlotOneInput);
+        EnhancedInputComponent->BindAction(SlotTwoAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleSlotTwoInput);
+        EnhancedInputComponent->BindAction(SlotThreeAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleSlotThreeInput);
+        EnhancedInputComponent->BindAction(SlotFourAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleSlotFourInput);
+        EnhancedInputComponent->BindAction(SlotFiveAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleSlotFiveInput);
+    
     }
 }
 

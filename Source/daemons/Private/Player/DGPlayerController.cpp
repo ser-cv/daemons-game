@@ -8,8 +8,8 @@
 
 void ADGPlayerController::CreateAndPossessMech(FTransform MechDummyTransform)
 {
-    ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-    if (Cast<ADGHumanCharacter>(CurrentCharacter))
+    
+    if (ADGHumanCharacter* CurrentCharacter = Cast<ADGHumanCharacter>(GetCharacter()))
     {
         FVector MechSpawnLocation = MechDummyTransform.GetLocation();
         FRotator MechSpawnRotation = MechDummyTransform.Rotator();
@@ -25,10 +25,7 @@ void ADGPlayerController::CreateAndPossessMech(FTransform MechDummyTransform)
 
 void ADGPlayerController::CreateAndPossessHuman()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, "Hi");
-
-    ACharacter* CurrentCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-    if (Cast<ADGMechCharacter>(CurrentCharacter))
+    if (ADGMechCharacter* CurrentCharacter = Cast<ADGMechCharacter>(GetCharacter()))
     {
         FVector HumanSpawnLocation = CurrentCharacter->GetActorLocation();
         FRotator HumanSpawnRotation = CurrentCharacter->GetActorRotation();

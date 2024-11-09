@@ -32,6 +32,26 @@ public:
     void SetCompToAttachWeapons(USceneComponent* NewComp) { CompToAttachWeapons = NewComp; };
     void InitWeapons();
 
+    void TryToSwitchWeapon(int SlotIndex);
+
+    // Weapons switching
+
+    void HandleLastWeaponInput();
+    void HandleNextWeaponInput();
+    void HandlePreviousWeaponInput();
+    void HandleSlotOneInput();
+    void HandleSlotTwoInput();
+    void HandleSlotThreeInput();
+    void HandleSlotFourInput();
+    void HandleSlotFiveInput();
+
+    bool CanSwitch{true};
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponComponent")
+    int ActiveWeaponSlot{0};
+
+    int PreviousActiveWeaponSlot{0};
+
 private:
     UPROPERTY()
     TObjectPtr<USceneComponent> CompToAttachWeapons;
