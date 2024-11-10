@@ -159,9 +159,9 @@ void ADGCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
         EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &ADGCharacterBase::CancelInteraction);
     
         // Weapon switch
-        EnhancedInputComponent->BindAction(LastWeaponAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::);
-        EnhancedInputComponent->BindAction(NextWeaponAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::);
-        EnhancedInputComponent->BindAction(PreviousWeaponAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::);
+        EnhancedInputComponent->BindAction(LastWeaponAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleLastWeaponInput);
+        EnhancedInputComponent->BindAction(NextWeaponAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleNextWeaponInput);
+        EnhancedInputComponent->BindAction(PreviousWeaponAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandlePreviousWeaponInput);
         EnhancedInputComponent->BindAction(SlotOneAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleSlotOneInput);
         EnhancedInputComponent->BindAction(SlotTwoAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleSlotTwoInput);
         EnhancedInputComponent->BindAction(SlotThreeAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleSlotThreeInput);
