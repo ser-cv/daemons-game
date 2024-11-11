@@ -18,8 +18,9 @@ public:
     UDGWeaponComponent();
 
 protected:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ForTesting")
-    TSubclassOf<ADGBaseWeapon> MainWeaponClass;
+    // Weapon classes
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WeaponComponent")
+    TArray<ADGBaseWeapon*> WeaponClasses;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     FName ArmedWeaponSocketName{"ArmedWeaponSocket"};
@@ -30,11 +31,12 @@ public:
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
     void SetCompToAttachWeapons(USceneComponent* NewComp) { CompToAttachWeapons = NewComp; };
-    void InitWeapons();
 
-    void TryToSwitchWeapon(int SlotIndex);
+    void HandlePrimaryAttackInput();
+    void HandleAlternativeModeInput();
 
     // Weapons switching
+    void TryToSwitchWeapon(int SlotIndex);
 
     void HandleLastWeaponInput();
     void HandleNextWeaponInput();
@@ -49,6 +51,9 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponComponent")
     int ActiveWeaponSlot{0};
+
+    UPROPERTY()
+    TObjectPtr<ADGBaseWeapon> ActiveWeapon;
 
     int PreviousActiveWeaponSlot{0};
 

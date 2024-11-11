@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/DGPlayerController.h"
+#include "Components/ChildActorComponent.h"
 
 ADGCharacterBase::ADGCharacterBase(const FObjectInitializer& ObjectInitializer)
 {
@@ -29,6 +30,9 @@ ADGCharacterBase::ADGCharacterBase(const FObjectInitializer& ObjectInitializer)
 
     WeaponComponent = CreateDefaultSubobject<UDGWeaponComponent>("WeaponComponent");
     HealthComponent = CreateDefaultSubobject<UDGHealthComponent>("HealthComponent");
+
+    WeaponChildActor = CreateDefaultSubobject<UChildActorComponent>("WeaponChildActor");
+    WeaponChildActor->SetupAttachment(FirstPersonMesh);
 }
 
 void ADGCharacterBase::BeginPlay()
@@ -115,7 +119,6 @@ void ADGCharacterBase::PostInitializeComponents()
     check(WeaponComponent);
 
     WeaponComponent->SetCompToAttachWeapons(FirstPersonMesh);
-    WeaponComponent->InitWeapons();
 }
 
 void ADGCharacterBase::PossessedBy(AController* NewController)

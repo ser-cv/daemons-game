@@ -18,14 +18,6 @@ void UDGWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UDGWeaponComponent::InitWeapons()
-{
-    if (!CompToAttachWeapons.Get()) return;
-    SpawnWeaponByType(MainWeaponClass, EItemType::MAIN_WEAPON);
-    AttachWeaponToSocket(EItemType::MAIN_WEAPON, ArmedWeaponSocketName);
-    ArmedWeaponType = EItemType::MAIN_WEAPON;
-}
-
 void UDGWeaponComponent::TryToSwitchWeapon(int SlotIndex) 
 {
     if (CanSwitch == false) return;

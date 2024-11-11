@@ -15,6 +15,7 @@ struct FInputActionValue;
 class UDGWeaponComponent;
 class UDGHealthComponent;
 class ADGPlayerController;
+class UChildActorComponent;
 
 UCLASS()
 class DAEMONS_API ADGCharacterBase : public ACharacter
@@ -98,6 +99,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UDGHealthComponent> HealthComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<UChildActorComponent> WeaponChildActor;
 
     UPROPERTY()
     TObjectPtr<UCharacterMovementComponent> CharacterMovementComp;
