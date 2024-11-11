@@ -56,7 +56,7 @@ void ADGCharacterBase::Tick(float DeltaTime)
 
 void ADGCharacterBase::Dash()
 {
-    if (bDashCooldown == false) return;
+    if (bDashCooldown) return;
 
     UWorld* CurrentWorld = GetWorld();
     if (CurrentWorld == nullptr) return;
