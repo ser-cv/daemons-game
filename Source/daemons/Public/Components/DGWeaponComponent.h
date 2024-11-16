@@ -20,10 +20,7 @@ public:
 protected:
     // Weapon classes
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WeaponComponent")
-    TArray<ADGBaseWeapon*> WeaponClasses;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-    FName ArmedWeaponSocketName{"ArmedWeaponSocket"};
+    TArray<TSubclassOf<ADGBaseWeapon>> WeaponClasses;
 
     virtual void BeginPlay() override;
 
@@ -52,9 +49,6 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponComponent")
     int ActiveWeaponSlot{0};
 
-    UPROPERTY()
-    TObjectPtr<ADGBaseWeapon> ActiveWeapon;
-
     int PreviousActiveWeaponSlot{0};
 
 private:
@@ -63,6 +57,9 @@ private:
 
     UPROPERTY()
     TMap<EItemType, ADGBaseWeapon*> WearableWeapons;
+
+    UPROPERTY()
+    TObjectPtr<ADGBaseWeapon> ActiveWeapon;
 
     EItemType ArmedWeaponType{EItemType::MAIN_WEAPON};
 

@@ -2,6 +2,7 @@
 
 #include "Components/DGWeaponComponent.h"
 #include "Weapons/DGBaseWeapon.h"
+#include "DGCharacterBase.h"
 
 UDGWeaponComponent::UDGWeaponComponent()
 {
@@ -18,23 +19,17 @@ void UDGWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+void UDGWeaponComponent::HandlePrimaryAttackInput() {}
+
+void UDGWeaponComponent::HandleAlternativeModeInput() {}
+
 void UDGWeaponComponent::TryToSwitchWeapon(int SlotIndex) 
 {
     if (CanSwitch == false) return;
-
-    switch (SlotIndex)
-    {
-        case 0: 
-            break;
-        case 1: 
-            break;
-        case 2: 
-            break;
-        case 3: 
-            break;
-        case 4: 
-            break;
-    }
+    if (SlotIndex >= WeaponClasses.Num()) return;
+        
+    GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::FromInt(SlotIndex));
+    //Cast<ADGCharacterBase>(GetOwner())->SetWeaponChildActorClass(WeaponClasses[SlotIndex]);
 
     PreviousActiveWeaponSlot = ActiveWeaponSlot;
     ActiveWeaponSlot = SlotIndex;
@@ -47,7 +42,7 @@ void UDGWeaponComponent::HandleLastWeaponInput()
 
 void UDGWeaponComponent::HandleNextWeaponInput()
 {
-    if (ActiveWeaponSlot < 4)
+    if (ActiveWeaponSlot + 1 < WeaponClasses.Num())
     {
         TryToSwitchWeapon(ActiveWeaponSlot + 1);
     }
@@ -65,7 +60,7 @@ void UDGWeaponComponent::HandlePreviousWeaponInput()
     }
     else
     {
-        TryToSwitchWeapon(4);
+        TryToSwitchWeapon(WeaponClasses.Num() - 1);
     }
 }
 

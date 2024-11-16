@@ -174,6 +174,12 @@ void ADGCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
     }
 }
 
+void ADGCharacterBase::SetWeaponChildActorClass(AActor* WeaponClass)
+{
+
+
+}
+
 void ADGCharacterBase::Move(const FInputActionValue& Value)
 {
     if (!Controller) return;

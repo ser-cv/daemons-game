@@ -100,7 +100,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UDGHealthComponent> HealthComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UChildActorComponent> WeaponChildActor;
 
     UPROPERTY()
@@ -173,6 +173,8 @@ public:
     virtual void PostInitializeComponents() override;
     void PossessedBy(AController* NewController);
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+    void SetWeaponChildActorClass(AActor* WeaponClass);
 
 private:
     UPROPERTY()
