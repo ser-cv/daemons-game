@@ -15,6 +15,7 @@ ADGBaseWeapon::ADGBaseWeapon()
     WeaponMesh->SetupAttachment(RootComponent);
 
     WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Ignore);
+    WeaponMesh->SetCastShadow(false);
 }
 
 void ADGBaseWeapon::BeginPlay()

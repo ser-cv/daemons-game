@@ -29,7 +29,7 @@ void UDGWeaponComponent::TryToSwitchWeapon(int SlotIndex)
     if (SlotIndex >= WeaponClasses.Num()) return;
         
     GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::FromInt(SlotIndex));
-    //Cast<ADGCharacterBase>(GetOwner())->SetWeaponChildActorClass(WeaponClasses[SlotIndex]);
+    Cast<ADGCharacterBase>(GetOwner())->SetWeaponChildActorClass(WeaponClasses[SlotIndex]);
 
     PreviousActiveWeaponSlot = ActiveWeaponSlot;
     ActiveWeaponSlot = SlotIndex;

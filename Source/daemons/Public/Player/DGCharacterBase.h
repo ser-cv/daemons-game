@@ -174,7 +174,7 @@ public:
     void PossessedBy(AController* NewController);
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-    void SetWeaponChildActorClass(AActor* WeaponClass);
+    void SetWeaponChildActorClass(TSubclassOf<AActor> WeaponClass);
 
 private:
     UPROPERTY()
