@@ -54,7 +54,7 @@ public:
     virtual void Tick(float DeltaTime) override;
     virtual void SetOwner(AActor* NewOwner) override;
 
-    void StartFire();
+    virtual void StartFire();
     void StopFire();
 
     void StartReloading();
@@ -77,10 +77,10 @@ private:
 
     void MakeShot();
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation);
-    APlayerController* GetPlayerController();
+    APlayerController* PlayerController;
     void MakeHit(FHitResult& Hit, const FVector& TraceStart, const FVector& TraceEnd);
     void MakeDamage(const FHitResult& Hit);
     bool IsEmptyClip() const { return !AmmoInClip; };
-    void ChangeAmmo(int32 Amount);
+    void UpdateAmmo(int32 Amount);
     void ReloadWeapon();
 };

@@ -8,6 +8,7 @@
 #include "DGWeaponComponent.generated.h"
 
 class ADGBaseWeapon;
+class ADGCharacterBase;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class DAEMONS_API UDGWeaponComponent : public UActorComponent
@@ -29,8 +30,15 @@ public:
 
     void SetCompToAttachWeapons(USceneComponent* NewComp) { CompToAttachWeapons = NewComp; };
 
+    // Handle input methods
+
     void HandlePrimaryAttackInput();
+    void StopPrimaryAttack();
+
     void HandleAlternativeModeInput();
+    void StopAlternativeMode();
+
+    void HandleReloadInput();
 
     // Weapons switching
     void TryToSwitchWeapon(int SlotIndex);
@@ -44,7 +52,7 @@ public:
     void HandleSlotFourInput();
     void HandleSlotFiveInput();
 
-    bool CanSwitch{true};
+    bool bCanSwitch{true};
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponComponent")
     int ActiveWeaponSlot{0};
@@ -55,14 +63,8 @@ private:
     UPROPERTY()
     TObjectPtr<USceneComponent> CompToAttachWeapons;
 
-    UPROPERTY()
-    TMap<EItemType, ADGBaseWeapon*> WearableWeapons;
+    bool bCanAttack{true};
 
     UPROPERTY()
-    TObjectPtr<ADGBaseWeapon> ActiveWeapon;
-
-    EItemType ArmedWeaponType{EItemType::MAIN_WEAPON};
-
-    void SpawnWeaponByType(UClass* WeaponClass, EItemType WeaponType);
-    void AttachWeaponToSocket(EItemType WeaponType, FName AttachingSocketName);
+    TObjectPtr<ADGCharacterBase> OwnerCharacter;
 };

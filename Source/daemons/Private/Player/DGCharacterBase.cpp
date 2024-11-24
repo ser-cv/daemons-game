@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Player/DGPlayerController.h"
 #include "Components/ChildActorComponent.h"
+#include "Weapons/DGBaseWeapon.h"
 
 ADGCharacterBase::ADGCharacterBase(const FObjectInitializer& ObjectInitializer)
 {
@@ -31,8 +32,8 @@ ADGCharacterBase::ADGCharacterBase(const FObjectInitializer& ObjectInitializer)
     WeaponComponent = CreateDefaultSubobject<UDGWeaponComponent>("WeaponComponent");
     HealthComponent = CreateDefaultSubobject<UDGHealthComponent>("HealthComponent");
 
-    WeaponChildActor = CreateDefaultSubobject<UChildActorComponent>("WeaponChildActor");
-    WeaponChildActor->SetupAttachment(FirstPersonMesh);
+    WeaponChildActorComponent = CreateDefaultSubobject<UChildActorComponent>("WeaponChildActor");
+    WeaponChildActorComponent->SetupAttachment(FirstPersonMesh);
 }
 
 void ADGCharacterBase::BeginPlay()
@@ -149,10 +150,13 @@ void ADGCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
-        //EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::StartFire);
-        //EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::StopFire);
+        EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandlePrimaryAttackInput);
+        EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::StopPrimaryAttack);
 
-        //EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::ReloadWeapon);
+        EnhancedInputComponent->BindAction(AlternativeGunModeAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleAlternativeModeInput);
+        EnhancedInputComponent->BindAction(AlternativeGunModeAction, ETriggerEvent::Completed, WeaponComponent.Get(), &UDGWeaponComponent::StopAlternativeMode);
+
+        EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, WeaponComponent.Get(), &UDGWeaponComponent::HandleReloadInput);
 
         EnhancedInputComponent->BindAction(AccelerateAction, ETriggerEvent::Started, this, &ADGCharacterBase::HandleAcceleration);
 
@@ -176,7 +180,23 @@ void ADGCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void ADGCharacterBase::SetWeaponChildActorClass(TSubclassOf<AActor> WeaponClass) 
 {
-    WeaponChildActor->SetChildActorClass(WeaponClass);
+    WeaponChildActorComponent->SetChildActorClass(WeaponClass);
+}
+
+ADGBaseWeapon* ADGCharacterBase::GetActiveWeapon()
+{
+    ADGBaseWeapon* CurrentWeapon = Cast<ADGBaseWeapon>(WeaponChildActorComponent->GetChildActor());
+    if (CurrentWeapon)
+        return CurrentWeapon;
+    else
+        return nullptr;
+}
+
+APlayerController* ADGCharacterBase::GetPlayerController()
+{
+    if (PlayerController == nullptr) return nullptr;
+
+    return PlayerController;
 }
 
 void ADGCharacterBase::Move(const FInputActionValue& Value)

@@ -101,7 +101,7 @@ protected:
     TObjectPtr<UDGHealthComponent> HealthComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<UChildActorComponent> WeaponChildActor;
+    TObjectPtr<UChildActorComponent> WeaponChildActorComponent;
 
     UPROPERTY()
     TObjectPtr<UCharacterMovementComponent> CharacterMovementComp;
@@ -175,6 +175,12 @@ public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
     void SetWeaponChildActorClass(TSubclassOf<AActor> WeaponClass);
+    
+    UFUNCTION()
+    ADGBaseWeapon* GetActiveWeapon();
+
+    UFUNCTION()
+    APlayerController* GetPlayerController();
 
 private:
     UPROPERTY()

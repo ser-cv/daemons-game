@@ -3,6 +3,7 @@
 #include "Components/DGWeaponComponent.h"
 #include "Weapons/DGBaseWeapon.h"
 #include "DGCharacterBase.h"
+#include "Weapons/DGBaseWeapon.h"
 
 UDGWeaponComponent::UDGWeaponComponent()
 {
@@ -12,6 +13,9 @@ UDGWeaponComponent::UDGWeaponComponent()
 void UDGWeaponComponent::BeginPlay()
 {
     Super::BeginPlay();
+
+    OwnerCharacter = Cast<ADGCharacterBase>(GetOwner());
+    TryToSwitchWeapon(0);
 }
 
 void UDGWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -19,17 +23,28 @@ void UDGWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UDGWeaponComponent::HandlePrimaryAttackInput() {}
+void UDGWeaponComponent::HandlePrimaryAttackInput() 
+{
+    if (bCanAttack == false || OwnerCharacter->GetActiveWeapon() == nullptr) return;
+
+    OwnerCharacter->GetActiveWeapon()->StartFire();
+}
+
+void UDGWeaponComponent::StopPrimaryAttack() {}
 
 void UDGWeaponComponent::HandleAlternativeModeInput() {}
 
+void UDGWeaponComponent::StopAlternativeMode() {}
+
+void UDGWeaponComponent::HandleReloadInput() {}
+
 void UDGWeaponComponent::TryToSwitchWeapon(int SlotIndex) 
 {
-    if (CanSwitch == false) return;
+    if (bCanSwitch == false) return;
     if (SlotIndex >= WeaponClasses.Num()) return;
         
     GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::FromInt(SlotIndex));
-    Cast<ADGCharacterBase>(GetOwner())->SetWeaponChildActorClass(WeaponClasses[SlotIndex]);
+    OwnerCharacter->SetWeaponChildActorClass(WeaponClasses[SlotIndex]);
 
     PreviousActiveWeaponSlot = ActiveWeaponSlot;
     ActiveWeaponSlot = SlotIndex;
@@ -87,19 +102,4 @@ void UDGWeaponComponent::HandleSlotFourInput()
 void UDGWeaponComponent::HandleSlotFiveInput()
 {
     TryToSwitchWeapon(4);
-}
-
-void UDGWeaponComponent::SpawnWeaponByType(UClass* WeaponClass, EItemType WeaponType)
-{
-    if (!WeaponClass || !GetWorld()) return;
-    WearableWeapons.Add(WeaponType, GetWorld()->SpawnActor<ADGBaseWeapon>(WeaponClass));
-    if (!WearableWeapons.FindRef(WeaponType)) return;
-    WearableWeapons[WeaponType]->SetOwner(GetOwner());
-}
-
-void UDGWeaponComponent::AttachWeaponToSocket(EItemType WeaponType, FName AttachingSocketName)
-{
-    if (!WearableWeapons.FindRef(WeaponType)) return;
-    FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
-    WearableWeapons[WeaponType]->AttachToComponent(CompToAttachWeapons, AttachmentRules, AttachingSocketName);
 }
