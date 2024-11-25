@@ -30,6 +30,7 @@ public:
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
     bool IsAlive() const { return Health > 0; }
+    bool IsDead() const { return !IsAlive(); }
 
 private:
     float Health = 0.0f;
@@ -38,4 +39,5 @@ private:
     void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
     void SetHealth(float NewHealth);
+    void Killed(AController* KillerController);
 };

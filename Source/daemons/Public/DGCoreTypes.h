@@ -20,6 +20,21 @@ enum class EAIBehaviorState : uint8
     Lost_Aim
 };
 
+UENUM(BlueprintType)
+enum class EPhase : uint8
+{
+    No_Phase,
+    Phase_1,
+    Phase_2,
+    Phase_3,
+    Phase_4,
+    Phase_5,
+    Phase_6,
+    Phase_7,
+    Phase_8,
+    Phase_9
+};
+
 USTRUCT(BlueprintType)
 struct FItemData
 {

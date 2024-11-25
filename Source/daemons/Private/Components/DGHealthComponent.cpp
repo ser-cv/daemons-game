@@ -1,6 +1,7 @@
 // For Daemons and something else videogame purpose only
 
 #include "Components/DGHealthComponent.h"
+#include "Game/DGGameModeBase.h"
 
 UDGHealthComponent::UDGHealthComponent()
 {
@@ -29,6 +30,11 @@ void UDGHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, con
 {
     if (Damage < .0f) return;
     SetHealth(Health - Damage);
+
+    if (IsDead())
+    {
+        Killed(InstigatedBy);
+    }
 }
 
 void UDGHealthComponent::SetHealth(float NewHealth)
@@ -41,4 +47,15 @@ void UDGHealthComponent::SetHealth(float NewHealth)
     }
 
     UE_LOG(LogTemp, Display, TEXT("Health: %f"), Health);
+}
+
+void UDGHealthComponent::Killed(AController* KillerController)
+{
+    if (!GetWorld()) return;
+    const auto GameMode = GetWorld()->GetAuthGameMode<ADGGameModeBase>();
+    if (!GameMode) return;
+
+    const auto ComponentPawnOwner = Cast<APawn>(GetOwner());
+    const auto VictimController = ComponentPawnOwner ? ComponentPawnOwner->Controller : nullptr;
+    GameMode->Killed(VictimController, KillerController);
 }
