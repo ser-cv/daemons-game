@@ -98,7 +98,7 @@ void ADGBaseWeapon::MakeShot()
     const float BulletSpread = 5.f;
     const float HalfRad = FMath::DegreesToRadians(BulletSpread);
     const FVector ShootDirection = ViewRotation.Vector();  //= FMath::VRandCone(ViewRotation.Vector(), HalfRad);
-    const FVector LineEnd = ViewLocation + ShootDirection * LineTraceDistance;
+    const FVector LineEnd = ViewLocation + ShootDirection * ShotLineTraceDistance;
 
     FHitResult Hit;
     MakeHit(Hit, ViewLocation, LineEnd);
