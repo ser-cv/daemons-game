@@ -4,6 +4,7 @@
 #include "Engine/DamageEvents.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetStringLibrary.h"
 
 ADGBaseWeapon::ADGBaseWeapon()
 {
@@ -48,10 +49,11 @@ void ADGBaseWeapon::SetOwner(AActor* NewOwner)
 
 void ADGBaseWeapon::StartFire()
 {
+    bIsTriggerPressed = true;
+
     if (IsEmptyClip() || !bIsCharged || bIsReloading) return;
 
     MakeShot();
-    bIsTriggerPressed = true;
 
     // Delay between shots
     if (GetWorldTimerManager().IsTimerActive(ChargingTimerHandle)) return;
@@ -61,6 +63,7 @@ void ADGBaseWeapon::StartFire()
         {
             bIsCharged = true;
             (bIsTriggerPressed && bIsAutomatic && !IsEmptyClip()) ? MakeShot() : GetWorldTimerManager().ClearTimer(ChargingTimerHandle);
+            GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, UKismetStringLibrary::Conv_BoolToString(bIsCharged));
         },
         60.f / ShotsPerMinute, true);
 }
@@ -68,6 +71,7 @@ void ADGBaseWeapon::StartFire()
 void ADGBaseWeapon::StopFire()
 {
     bIsTriggerPressed = false;
+
 }
 
 void ADGBaseWeapon::StartReloading()
@@ -87,7 +91,8 @@ void ADGBaseWeapon::StartReloading()
 
 void ADGBaseWeapon::MakeShot()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "BOO");
+    GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "BOOM");
+    bIsCharged = false;
 
     const FVector MuzzleLocation = WeaponMesh->GetSocketLocation(MuzzleSocketName);
 
@@ -95,9 +100,7 @@ void ADGBaseWeapon::MakeShot()
     FRotator ViewRotation{FRotator::ZeroRotator};
     if (GetPlayerViewPoint(ViewLocation, ViewRotation) == false) return;
 
-    const float BulletSpread = 5.f;
-    const float HalfRad = FMath::DegreesToRadians(BulletSpread);
-    const FVector ShootDirection = ViewRotation.Vector();  //= FMath::VRandCone(ViewRotation.Vector(), HalfRad);
+    const FVector ShootDirection = ViewRotation.Vector();
     const FVector LineEnd = ViewLocation + ShootDirection * ShotLineTraceDistance;
 
     FHitResult Hit;
@@ -108,10 +111,16 @@ void ADGBaseWeapon::MakeShot()
         MakeDamage(Hit);
     }
 
-    UpdateAmmo(-1);
-
-    GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, LineEnd.ToString());
+     if (Hit.GetActor())
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, Hit.GetActor()->GetName());
+    }
     DrawDebugLine(GetWorld(), MuzzleLocation, LineEnd, FColor::Green, false, 2.f, 0u, 2.f);
+
+    if (bIsInfiniteAmmo == false)
+    {
+        UpdateAmmo(-1);
+    }
 }
 
 bool ADGBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation)
@@ -147,7 +156,6 @@ void ADGBaseWeapon::MakeDamage(const FHitResult& Hit)
 void ADGBaseWeapon::UpdateAmmo(int32 Amount)
 {
     AmmoInClip = FMath::Clamp(AmmoInClip + Amount, 0, ClipCapacity);
-    bIsCharged = false;
 }
 
 void ADGBaseWeapon::ReloadWeapon()

@@ -30,7 +30,12 @@ void UDGWeaponComponent::HandlePrimaryAttackInput()
     OwnerCharacter->GetActiveWeapon()->StartFire();
 }
 
-void UDGWeaponComponent::StopPrimaryAttack() {}
+void UDGWeaponComponent::StopPrimaryAttack() 
+{
+    if (OwnerCharacter->GetActiveWeapon() == nullptr) return;
+
+    OwnerCharacter->GetActiveWeapon()->StopFire();
+}
 
 void UDGWeaponComponent::HandleAlternativeModeInput() {}
 

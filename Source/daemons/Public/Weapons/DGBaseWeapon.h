@@ -21,7 +21,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     TObjectPtr<UStaticMeshComponent> WeaponMesh;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (ClampMin = "1", ClampMax = "4000"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (ClampMin = "1", ClampMax = "5000"))
     float ShotLineTraceDistance{5000.f};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (ClampMin = "0", ClampMax = "100"))
