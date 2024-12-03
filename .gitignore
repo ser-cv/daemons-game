@@ -5,6 +5,12 @@
 # Visual Studio 2015 user specific files
 .vs/
 
+### UnrealEngine ###
+# Other Unreal Engine rules...
+
+Content/VigilanteContent/Vehicles/West_Bomber_B52H/
+
+
 # Compiled Object files
 *.slo
 *.lo
@@ -52,6 +58,8 @@ SourceArt/**/*.tga
 # Binary Files
 Binaries/*
 Plugins/*/Binaries/*
+Content/VigilanteContent/Vehicles/West_Bomber_B52H/
+
 
 # Builds
 Build/*
